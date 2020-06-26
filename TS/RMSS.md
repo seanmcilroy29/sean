@@ -1,16 +1,27 @@
-## Scope
+## 	Conventions
 
-This document specifies the transport bindings of the Lightweight Machine-to-Machine (LwM2M) protocol version 1.2. The split between the LwM2M core [LwM2M-CORE] and the transport binding specification improves readability, allows a cleaner separation between the LwM2M messaging layer and the underlying protocols for conveying these messages, and ultimately better extensibility. 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED”, “MAY", and “OPTIONAL" in this document are to be interpreted as described in RFC 2119.
 
-LwM2M version 1.0 supported the CoAP over UDP and CoAP over SMS transport bindings. The UDP and SMS transports can be used with or without DTLS.
+The octet order over the air for all multi-octet fields is little endian (Least significant byte is sent first).
 
-LwM2M version 1.1 added support for CoAP over TCP and CoAP over Non-IP transport bindings. The TCP transport can be used with or without TLS. The Non-IP transport is applicable to 3GPP CIoT and LoRaWAN. CoAP over TCP, as defined in [CoAP_TCP], offers better firewall traversal, as explained in Section 1 of [CoAP_TCP].
 
-This specification, LwM2M version 1.2, added support for HTTP and MQTT transport bindings.
+## 2	Introduction
 
-This specification also supports the application layer security protocol OSCORE \[OSCORE\] which enables support for proxy operations and end-to-end security independently of transport layer protocol.
+This document defines an application layer messaging package running over LoRaWAN to perform the following operations on a fleet of end-devices:
+-	Program a multicast distribution window into a group of end-devices
+-	Having all end-devices of the group switch to ClassB or ClassC temporarily at the beginning of the slot
+-	Close the distribution window and revert to normal operation (e.g. return to Class A, or change to a different periodicity in Class B)
 
-## References
+All messages described in this document are transported as application layer messages. As such, all unicast messages (uplink or downlink) are encrypted by the LoRaWAN MAC layer using the end-device’s AppSKey. Downlink multicast messages are encrypted using a multicast group McAppSKey common to all end-devices of the group. The setup of the group as well as means to convey the MCAppSKey are described in the document.
+The <strong>“multicast control”</strong> package can be used to:
+-	Remotely create a multicast group security context inside a group of end-devices
+-	Report the list of multicast context existing in the end-device
+-	Remotely delete a multicast security context.
+-	Program a classC multicast session
+-	Program a classB multicast session
+
+This package uses a dedicated port to separate its traffic from the rest of the applicative traffic.
+
 
 ### Normative References
 
