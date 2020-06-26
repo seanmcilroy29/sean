@@ -156,7 +156,27 @@ The following table summarizes the list of multicast control messages
     </tbody>
 </table>
 
-## Terminology and Conventions
+### PackageVersionReq & Ans
+The <strong>PackageVersionReq</strong> command has no payload.
+The end-device answers with a <strong>PackageVersionAns</strong> command with the following payload.
+
+<table>
+    <caption>PackageVersionAns</caption>
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Size(bytes)</th>
+        </tr>
+        <tr>
+            <td>PackageIdentifier</td>
+            <td>1</td>
+        </tr>
+	<tr>
+            <td>PackageVersion</td>
+            <td>1</td>
+        </tr>
+    </tbody>
+</table>
 
 ### Conventions
 
