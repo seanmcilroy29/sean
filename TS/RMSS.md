@@ -1,11 +1,11 @@
-## 	Conventions
+## Conventions
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED”, “MAY", and “OPTIONAL" in this document are to be interpreted as described in RFC 2119.
 
 The octet order over the air for all multi-octet fields is little endian (Least significant byte is sent first).
 
 
-## 2	Introduction
+## Introduction
 
 This document defines an application layer messaging package running over LoRaWAN to perform the following operations on a fleet of end-devices:
 -	Program a multicast distribution window into a group of end-devices
@@ -23,169 +23,17 @@ The <strong>“multicast control”</strong> package can be used to:
 This package uses a dedicated port to separate its traffic from the rest of the applicative traffic.
 
 
-### Normative References
+## Multicast group context definition
 
-<table>
-    <caption>Normative References</caption>
-    <tbody>
-        <tr>
-          <td><strong>[LwM2M-ConnMgmt]</strong></td>
-          <td>Open Mobile Alliance, Lightweight M2M – Connectivity Management Object (LwM2M Object – ConnMgmt)</td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP-TS_23.003]</strong></td>
-            <td>3GPP TS 23.003 "Numbering, addressing and identification", <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP TS 23.038]</strong></td>
-            <td>3GPP TS 23.038 "Alphabets and language-specific information", <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP TS 23.040]</strong></td>
-            <td>3GPP TS 23.040 "Technical realization of the Short Message Service (SMS)", <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP TS 24.250]</strong></td>
-            <td>3GPP TS 24.250 "Protocol for Reliable Data Service", <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP TS 31.115]</strong></td>
-            <td>3GPP TS 31.115 "Secured packet structure for (Universal) Subscriber Identity Module (U)SIM Toolkit applications", <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[CoAP]</strong></td>
-            <td>Z. Shelby, K. Hartke, C. Bormann, B. Frank, "The Constrained Application Protocol (CoAP)", June 2014, <a href="https://www.ietf.org/rfc/rfc7252.txt">URL:https://www.ietf.org/rfc/rfc7252.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[CoAP_Blockwise]</strong></td>
-            <td>C. Bormann, Z. Shelby, "Block-wise transfers in CoAP", August 2016, <a href="https://www.ietf.org/rfc/rfc7959.txt">URL:https://www.ietf.org/rfc/rfc7959.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[CoAP_TCP]</strong></td>
-            <td>C. Bormann, S. Lemay, H. Tschofenig, K. Hartke, B. Silverajan, B. Raymor, "CoAP (Constrained Application Protocol) over TCP, TLS, and WebSockets", February 2018, <a href="https://www.ietf.org/rfc/rfc8323.txt">URL:https://www.ietf.org/rfc/rfc8323.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[CoAP_ERT]</strong></td>
-            <td>C. Amsuess, J. Mattsson, G. Selander, "Echo and Request-Tag", June 2018, <a href="https://tools.ietf.org/html/draft-ietf-core-echo-request-tag-02">draft-ietf-core-echo-request-tag-02</a></td>
-        </tr>
-        <tr>
-            <td><strong>[CoAP-EST]</strong></td>
-            <td>P. van der Stok, P. Kampanakis, S. Kumar, M. Richardson, M. Furuhed, S. Raza, "EST over secure CoAP (EST-coaps)", July 2018, <a href="https://tools.ietf.org/html/draft-ietf-ace-coap-est-05">draft-ietf-ace-coap-est-05</a></td>
-        </tr>
-        <tr>
-            <td><strong>[CoRE_Interface]</strong></td>
-            <td>Z. Shelby, M. Vial, "CoRE Interfaces", November 2013, <a href="https://tools.ietf.org/html/draft-ietf-core-interfaces-01">draft-ietf-core-interfaces-01</a></td>
-        </tr>
-        <tr>
-            <td><strong>[ETSI TS 102.221]</strong></td>
-            <td>"Smart Cards; UICC-Terminal interface; Physical and logical characteristics", (ETSI TS 102 221 release 11), <a href="http://www.etsi.org/">URL:http://www.etsi.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[ETSI TS 102.223]</strong></td>
-            <td>"Smart Cards; Card Applications Toolkit (CAT) (Release 11)", <a href="http://www.etsi.org/">URL:http://www.etsi.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[ETSI TS 102.225]</strong></td>
-            <td>ETSI TS 102 225 (V11.0.0): "Smart Cards; Secured packet structure for UICC based applications (Release 11)" <a href="http://www.etsi.org/">URL:http://www.etsi.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[GLOBALPLATFORM]</strong></td>
-            <td>GlobalPlatform v2.2.1, January 2011</td>
-        </tr>
-        <tr>
-            <td><strong>[GP SCP03]</strong></td>
-            <td>GlobalPlatform Secure Channel Protocol 03 (SCP 03) Amendment D v1.1, September 2009</td>
-        </tr>
-        <tr> 
-            <td><strong>[OBSERVE]</strong></td>
-            <td>K. Hartke, "Observing Resources in the Constrained Application Protocol (CoAP)", September 2015, <a href="https://www.ietf.org/rfc/rfc7641.txt">URL:https://www.ietf.org/rfc/rfc7641.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[OSCORE]</strong></td>
-            <td>G. Selander, J. Mattsson, F. Palombini, L. Seitz, "Object Security for Constrained RESTful Environments (OSCORE)", March 2019, <a href="https://tools.ietf.org/html/draft-ietf-core-object-security-16">draft-ietf-core-object-security-16</a></td>
-        </tr>
-        <tr>
-            <td><strong>[RFC2119]</strong></td>
-            <td>S. Bradner, "Key words for use in RFCs to Indicate Requirement Levels", March 1997, <a href="https://www.ietf.org/rfc/rfc2119.txt">URL:https://www.ietf.org/rfc/rfc2119.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[RFC5246]</strong></td>
-            <td>T. Dierks, E. Rescorla, "The Transport Layer Security (TLS) Protocol Version 1.2", August 2008, <a href="https://www.ietf.org/rfc/rfc5246.txt">URL:https://www.ietf.org/rfc/rfc5246.txt</a></td>
-        </tr>  
-        <tr>
-            <td><strong>[RFC8446]</strong></td>
-            <td>E. Rescorla, "The Transport Layer Security (TLS) Protocol Version 1.3", August 2018, <a href="https://www.ietf.org/rfc/rfc8446.txt">URL:https://www.ietf.org/rfc/rfc8446.txt</a></td>
-        </tr>	    
-        <tr>
-            <td><strong>[RFC5280]</strong></td>
-            <td>D. Cooper, S. Santesson, S. Farrell, S. Boeyen, R. Housley, W. Polk, "Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile", May 2008, <a href="https://www.ietf.org/rfc/rfc5280.txt">URL:https://www.ietf.org/rfc/rfc5280.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[RFC5289]</strong></td>
-            <td>E. Rescorla, "TLS Elliptic Curve Cipher Suites with SHA-256/384 and AES Galois Counter Mode (GCM)", August 2008, <a href="https://www.ietf.org/rfc/rfc5289.txt">URL:https://www.ietf.org/rfc/rfc5289.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[RFC5487]</strong></td>
-            <td>M. Badra, "Pre-Shared Key Cipher Suites for TLS with SHA-256/384 and AES Galois Counter Mode", March 2009, <a href="https://www.ietf.org/rfc/rfc5487.txt">URL:https://www.ietf.org/rfc/rfc5487.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[RFC5869]</strong></td>
-            <td>H. Krawczyk, P. Eronen, "HMAC-based Extract-and-Expand Key Derivation Function (HKDF)", May 2010, <a href="https://www.ietf.org/rfc/rfc5869.txt">URL:https://www.ietf.org/rfc/rfc5869.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[RFC6347]</strong></td>
-            <td>E. Rescorla, N. Modadugu, "Datagram Transport Layer Security Version 1.2", January 2012, <a href="https://www.ietf.org/rfc/rfc6347.txt">URL:https://www.ietf.org/rfc/rfc6347.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[RFC6655]</strong></td>
-            <td>D. McGrew, D. Bailey, "AES-CCM Cipher Suites for TLS", July 2012, <a href="https://www.ietf.org/rfc/rfc6655.txt">URL:https://www.ietf.org/rfc/rfc6655.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[RFC6690]</strong></td>
-            <td>Z. Shelby, "Constrained RESTful Environments (CoRE) Link Format", August 2012, <a href="https://www.ietf.org/rfc/rfc6690.txt">URL:https://www.ietf.org/rfc/rfc6690.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[WAP-WDP]</strong></td>
-            <td>Wireless Application Protocol Forum, "Wireless Datagram Protocol", June 2001</td>
-        </tr>
-        <tr>
-            <td><strong>[RFC7925]</strong></td>
-            <td>H. Tschofenig, T. Fossati, "Transport Layer Security (TLS) / Datagram Transport Layer Security (DTLS) Profiles for the Internet of Things", July 2016, <a href="https://www.ietf.org/rfc/rfc7925.txt">URL:https://www.ietf.org/rfc/rfc7925.txt</a></td>
-        </tr>
-        <tr>
-             <td><strong>[RFC8075]</strong></td>
-             <td>A. Castellani, S. Loreto, A. Rahman, T. Fossati, E. Dijk, "Guidelines for Mapping Implementations: HTTP to the Constrained Application Protocol (CoAP)", February 2017, <a href="https://www.ietf.org/rfc/rfc8075.txt">URL:https://www.ietf.org/rfc/rfc8075.txt</a></td>
-         </tr>
-         <tr>
-             <td><strong>[RFC8152]</strong></td>
-            <td>J. Schaad, "CBOR Object Signing and Encryption (COSE)", July 2017, <a href="https://www.ietf.org/rfc/rfc8152.txt">URL:https://www.ietf.org/rfc/rfc8152.txt</a></td>
-        </tr> 
-        <tr>
-            <td><strong>[LwM2M-CORE]</strong></td>
-            <td>Open Mobile Alliance, "Lightweight Machine to Machine Technical Specification: Core Layer".</td>
-        </tr>
-        <tr>
-            <td><strong>[RFC5958]</strong></td>
-            <td>S. Turner, "Asymmetric Key Packages", August 2010, <a href="https://www.ietf.org/rfc/rfc5958.txt">URL:https://www.ietf.org/rfc/rfc5958.txt</a></td>
-        </tr>
-	    <tr>
-            <td><strong>[RFC7366]</strong></td>
-            <td>P. Gutmann, "Encrypt-then-MAC for Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)", September 2014, <a href="https://www.ietf.org/rfc/rfc7366.txt">URL:https://www.ietf.org/rfc/rfc7366.txt</a></td>
-        </tr>
-      	<tr>
-            <td><strong>[RFC8132]</strong></td>
-            <td>P. van der Stok, C. Bormann, A. Sehgal, "PATCH and FETCH Methods for the Constrained Application Protocol (CoAP)", April 2017, <a href="https://www.ietf.org/rfc/rfc8132.txt">URL:https://www.ietf.org/rfc/rfc8132.txt</a></td>
-	</tr>
-        <tr>
-            <td><strong>[SCRRULES]</strong></td>
-            <td>"SCR Rules and Procedures", Open Mobile Alliance™, OMA-ORG-SCR_Rules_and_Procedures, URL:http://member.openmobilealliance.org/ftp/Public_documents/iop/Permanent_documents/OMA-ORG-SCR_Rules_and_Procedures-V1_0-20060919-A.zip</td>
-        </tr>
-      	<tr>
-            <td><strong>[RFC2616]</strong></td>
-            <td>R. Fielding, J. Gettys, J. Mogul, H. Frystyk, L. Masinter, P. Leach, T. Berners-Lee, "Hypertext Transfer Protocol -- HTTP/1.1", June 1999, <a href="https://www.ietf.org/rfc/rfc2616.txt">URL:https://www.ietf.org/rfc/rfc2616.txt</a></td>
-	</tr>
-    </tbody>
-</table>
+This package makes the following assumptions.
+Inside a given end-device a multicast group is defined by the following parameters (the multicast group context):
+1. A McGroupID:  an integer in [0:3], the index of the multicast group. This index is used as an end-device specific shortcut to reference one of the multicast groups defined inside the end-device. An end-device supports a maximum of 4 simultaneous multicast groups, and a minimum of 0.
+2. Multicast address:  the 4 bytes network address of the multicast group, common to all end-devices of the group. 
+3. A multicast group key (McKey) from which are derived a McAppSKey and a McNwkSKey. The McKey is multicast group specific (different for every multicast group), but all end-devices of a given multicast group have the same McKey associated to this group 
+4. A frame counter.
+Because the end-device can be part of up to 4 multicast groups, every multicast control command MUST first define which multicast group is concerned by the command. To minimize the protocol overhead, a 2-bit McGroupID shortcut is used instead of the full 4 bytes multicast group network address in most of the commands defined in this package.
+An end-device MAY support up to 4 multicast groups contexts defined simultaneously. If an end-device supports N simultaneous multicast group contexts where 1<=N<=4 then the McGroupID can only be in the range [0:N-1].
+
 
 
 ### Informative References
