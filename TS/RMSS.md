@@ -38,9 +38,9 @@ Inside a given end-device a multicast group is defined by the following paramete
 	
 Because the end-device can be part of up to 4 multicast groups, every multicast control command MUST first define which multicast group is concerned by the command. To minimize the protocol overhead, a 2-bit McGroupID shortcut is used instead of the full 4 bytes multicast group network address in most of the commands defined in this package.An end-device MAY support up to 4 multicast groups contexts defined simultaneously. If an end-device supports N simultaneous multicast group contexts where 1<=N<=4 then the McGroupID can only be in the range [0:N-1].
 
-	
-	For example, if an end-device is designed to support only a single multicast group, then this group can only have McGroupID=0.
-
+```	
+For example, if an end-device is designed to support only a single multicast group, then this group can only have McGroupID=0.
+```
 ## Multicast Control Message Package
 
 The identifier of the multicast control package is 2. The version of this package is version 1.
@@ -51,6 +51,109 @@ The following messages are sent to each end-device individually using Unicast do
 All unicast control messages use the same format:
 <table>
   <tr> <td>Command1</td> <td>Command1 Payload</td> <td>Command2</td> <td>Command2 payload</td> <td>....</td> </tr>
+</table>
+
+A message MAY carry more than one command. The length of each command’s payload is fixed and a function of the command. Commands are executed from first to last. Each command MUST be individually acknowledged by the end-device.
+
+The following table summarizes the list of multicast control messages
+
+<table>
+    <caption>Multicast Control messages summary </caption>
+    <thead>
+        <tr>
+            <th>CID</th>
+            <th>Command name</th>
+            <th>Transmitted by end-device</th>
+            <th>Transmitted by Server</th>
+            <th>Short Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>0x00</td>
+            <td>PackageVersionReq</td>
+            <td></td>
+            <td>x</td>
+            <td>Used by the AS to request the package version implemented by the end-device</td>
+        </tr>
+	    <tr>
+            <td>0x00</td>
+            <td>PackageVersionAns</td>
+            <td>x</td>
+            <td></td>
+            <td>Conveys the answer to PackageVersionReq</td>
+        </tr>
+        <tr>
+            <td>0x01</td>
+            <td>McGroupStatusReq</td>
+            <td></td>
+            <td>x</td>
+            <td>Asks an end-device to list the multicast groups currently configured</td>
+        </tr>
+	<tr>
+            <td>0x01</td>
+            <td>McGoupStatusAns</td>
+            <td>x</td>
+            <td></td>
+            <td>Conveys answer to the McGroupStatus request</td>
+        </tr>
+        <tr>
+            <td>0x02</td>
+            <td>McGroupSetupReq</td>
+            <td></td>
+            <td>x</td>
+            <td>Provides an end-device will all necessary information to join a multicast group</td>
+        </tr>
+        <tr>
+            <td>0x02</td>
+            <td>McGroupSetupAns</td>
+            <td>x</td>
+            <td></td>
+            <td></td>
+        </tr>
+	<tr>
+            <td>0x03</td>
+            <td>McGroupDeleteReq</td>
+            <td></td>
+            <td>x</td>
+            <td>Used to delete a multicast group from an end-device</td>
+        </tr>
+	 <tr>
+            <td>0x03</td>
+            <td>McGroupDeleteAns</td>
+            <td>x</td>
+            <td></td>
+            <td></td>
+        </tr>
+	 <tr>
+            <td>0x04</td>
+            <td>McClassCSessionReq</td>
+            <td></td>
+            <td>x</td>
+            <td>Conveys information about the next classC multicast session the end-device shall join</td>
+        </tr>
+	 <tr>
+            <td>0x04</td>
+            <td>McClassCSessionAns</td>
+            <td>x</td>
+            <td></td>
+            <td></td>
+        </tr>
+	 <tr>
+            <td>0x05</td>
+            <td>McClassBSessionReq</td>
+            <td></td>
+            <td>x</td>
+            <td>Creates a class B multicast session </td>
+        </tr>
+	 <tr>
+            <td>0x05</td>
+            <td>McClassBSessionAns</td>
+            <td>x</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
 </table>
 
 ## Terminology and Conventions
