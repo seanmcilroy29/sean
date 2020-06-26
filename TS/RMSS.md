@@ -233,7 +233,7 @@ The end-device responds to the McGroupStatusReq command with a McGroupStatusAns 
             <th>Size(bytes)</th>
         </tr>
         <tr>
-            <td>status/td>
+            <td>status</td>
             <td>1</td>
         </tr>
 	 <tr>
@@ -339,11 +339,15 @@ An end-device implementing this package SHALL support at least one multicast gro
 *McKey_encrypted* is the encrypted multicast group key from which McAppSKey and McNetSKey will be derived. The McKey_encrypted key can be decrypted using the following operation to give the multicast group’s McKey.
 	McKey = aes128_encrypt(McKEKey, McKey_encrypted)
 
-The McKEKey is a __**lifetime end-device specific**__ key used to encrypt Multicast key transported over the air (it is a Key Encryption Key), and may be either:
+The McKEKey is a _**lifetime end-device specific**_ key used to encrypt Multicast key transported over the air (it is a Key Encryption Key), and may be either:
 
+* Derived from a new root key (GenAppKey) provisioned in the end-device at any time before the deployment of the end-device in the field. LoRaWAN 1.0.x end-devices SHALL use this scheme. 
+  * McRootKey = aes128_encrypt(GenAppKey, 0x00 | pad16)
+  * McKEKey = aes128_encrypt(McRootKey, 0x00 | pad16)
 
-
-
+* Derived from the AppKey.  LoRaWAN 1.1+ end-devices SHALL use this scheme.
+  * McRootKey = aes128_encrypt(AppKey, 0x20 | pad16)
+  * McKEKey = aes128_encrypt(McRootKey, 0x00 | pad16)
 
 ### Abbreviations
 
