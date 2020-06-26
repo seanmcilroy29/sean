@@ -33,103 +33,24 @@ Inside a given end-device a multicast group is defined by the following paramete
 2. Multicast address:  the 4 bytes network address of the multicast group, common to all end-devices of the group. 
 	
 3. A multicast group key (McKey) from which are derived a McAppSKey and a McNwkSKey. The McKey is multicast group specific (different for every multicast group), but all end-devices of a given multicast group have the same McKey associated to this group 
-	
+
 4. A frame counter.
 	
 Because the end-device can be part of up to 4 multicast groups, every multicast control command MUST first define which multicast group is concerned by the command. To minimize the protocol overhead, a 2-bit McGroupID shortcut is used instead of the full 4 bytes multicast group network address in most of the commands defined in this package.An end-device MAY support up to 4 multicast groups contexts defined simultaneously. If an end-device supports N simultaneous multicast group contexts where 1<=N<=4 then the McGroupID can only be in the range [0:N-1].
 
+	
+	For example, if an end-device is designed to support only a single multicast group, then this group can only have McGroupID=0.
+
+## Multicast Control Message Package
+
+The identifier of the multicast control package is 2. The version of this package is version 1.
+
+The following messages are sent to each end-device individually using Unicast downlink on a port specifically used for the multicast package. The default port value is 200. These messages MUST NOT be sent using multicast. If these messages are received on a multicast address the end-device MUST drop them silently.
 
 
-### Informative References
-
+All unicast control messages use the same format:
 <table>
-    <caption>Informative References</caption>
-    <tbody>
-	    <tr>
-            <td><strong>[3GPP-TR_21.905]</strong></td>
-            <td>3GPP TR 21.905 Vocabulary for 3GPP Specifications, <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP-TS_23.060]</strong></td>
-            <td>3GPP TS 23.060 General Packet Radio Service (GPRS); Service description; Stage 2, <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP-TS_23.401]</strong></td>
-            <td>3GPP TS 23.401 General Packet Radio Service (GPRS) enhancements for Evolved Universal Terrestrial Radio Access Network (E-UTRAN) access, <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP-TS_23.682]</strong></td>
-            <td>3GPP TS 23.682 Architecture enhancements to facilitate communications with packet data networks and applications, <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP-TR_23.720]</strong></td>
-            <td>3GPP TR 23.720 Study on architecture enhancements for Cellular Internet of Things (CIoT), <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP-TS_24.008]</strong></td>
-            <td>3GPP TS 24.008 Mobile radio interface Layer 3 specification; Core network protocols; Stage 3, <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP-TS_24.301]</strong></td>
-            <td>3GPP TS 24.301 Non-Access-Stratum (NAS) protocol for Evolved Packet System (EPS); Stage 3, <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP-TS_27.060]</strong></td>
-            <td>3GPP TS 27.060 Packet domain; Mobile Station (MS) supporting Packet Switched services, <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP-TS_29.061]</strong></td>
-            <td>3GPP TS 29.061 Interworking between the Public Land Mobile Network (PLMN) supporting packet based services and Packet Data Networks (PDN), <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP-TS_31.102]</strong></td>
-            <td>3GPP TS 31.102 Characteristics of the Universal Subscriber Identity Module (USIM) application, <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[3GPP-TS_29.122]</strong></td>
-            <td>3GPP TS 29.122 T8 reference point for Northbound APIs, <a href="http://www.3gpp.org/">URL:http://www.3gpp.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[OMADICT]</strong></td>
-            <td>"Dictionary for OMA Specifications", Open Mobile Alliance™, OMA-ORG-Dictionary-V2_9, <a href="URL:http://www.openmobilealliance.org/" class="uri">URL:http://www.openmobilealliance.org/</a></td>
-        </tr>
-        <tr>
-            <td><strong>[RFC4086]</strong></td>
-            <td>D. Eastlake, J. Schiller, S. Crocker, "Randomness Requirements for Security", June 2005, <a href="https://www.ietf.org/rfc/rfc4086.txt">URL:https://www.ietf.org/rfc/rfc4086.txt</a></td>
-        </tr>
-        <tr>
-            <td><strong>[RFC7457]</strong></td>
-            <td>Y. Sheffer, R. Holz, P. Saint-Andre, "Summarizing Known Attacks on Transport Layer Security (TLS) and Datagram TLS (DTLS)", February 2015, <a href="https://www.ietf.org/rfc/rfc7457.txt">URL:https://www.ietf.org/rfc/rfc7457.txt</a> </td>
-        </tr>
-        <tr>
-            <td><strong>[SP800-90A]</strong></td>
-            <td>Elaine Barker, John Kelsey, "Recommendation for Random Number Generation Using Deterministic Random Bit Generators, NIST Special Publication 800-90A", Revision 1, June 2015, available at <a href="http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90Ar1.pdf" class="uri">http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90Ar1.pdf</a></td>
-        </tr>
-        <tr>
-            <td><strong>[LoRaWAN]</strong></td>
-            <td>The LoRa Alliance, "LoRaWAN 1.1 Specification", available at <a href="https://www.lora-alliance.org/lorawan-for-developers" class="uri">https://www.lora-alliance.org/lorawan-for-developers</a></td>
-        </tr>
-        <tr>
-            <td><strong>[RFC6961]</strong></td>
-            <td>Y. Pettersen, "The Transport Layer Security (TLS) Multiple Certificate Status Request Extension", June 2013, <a href="https://www.ietf.org/rfc/rfc6961.txt">URL:https://www.ietf.org/rfc/rfc6961.txt</a></td>
-        </tr>  
-        <tr>
-            <td><strong>[DTLS-1.2-CID]</strong></td>
-            <td>E. Rescorla, H. Tschofenig, T. Fossati, "Connection Identifiers for DTLS 1.2", October 2019, <a href="https://tools.ietf.org/html/draft-ietf-tls-dtls-connection-id-07">draft-ietf-tls-dtls-connection-id-07</a></td>
-        </tr>        
-        <tr>
-            <td><strong>[DTLS-1.3]</strong></td>
-            <td>E. Rescorla, H. Tschofenig, N. Modadugu, "The Datagram Transport Layer Security (DTLS) Protocol Version 1.3", March 2020, <a href="https://tools.ietf.org/html/draft-ietf-tls-dtls13-37">draft-ietf-tls-dtls13-37</a></td>
-        </tr>
-      	<tr>
-            <td><strong>[RFC7540]</strong></td>
-            <td>M. Belshe, R. Peon, M. Thomson, "Hypertext Transfer Protocol Version 2 (HTTP/2)", May 2015, <a href="https://www.ietf.org/rfc/rfc7540.txt">URL:https://www.ietf.org/rfc/rfc7540.txt</a></td>
-	</tr>
-      	<tr>
-            <td><strong>[RFC5789]</strong></td>
-            <td>L. Dusseault, J. Snell, "PATCH Method for HTTP", March 2010, <a href="https://www.ietf.org/rfc/rfc5789.txt">URL:https://www.ietf.org/rfc/rfc5789.txt</a></td>
-	</tr>
-    </tbody>
+  <tr> <td>Command1</td> <td>Command1 Payload</td> <td>Command2</td> <td>Command2 payload</td> <td>....</td> </tr>
 </table>
 
 ## Terminology and Conventions
