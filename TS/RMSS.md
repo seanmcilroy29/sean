@@ -13,7 +13,7 @@ This document defines an application layer messaging package running over LoRaWA
 -	Close the distribution window and revert to normal operation (e.g. return to Class A, or change to a different periodicity in Class B)
 
 All messages described in this document are transported as application layer messages. As such, all unicast messages (uplink or downlink) are encrypted by the LoRaWAN MAC layer using the end-device’s AppSKey. Downlink multicast messages are encrypted using a multicast group McAppSKey common to all end-devices of the group. The setup of the group as well as means to convey the MCAppSKey are described in the document.
-The <strong>“multicast control”</strong> package can be used to:
+The **“multicast control”** package can be used to:
 -	Remotely create a multicast group security context inside a group of end-devices
 -	Report the list of multicast context existing in the end-device
 -	Remotely delete a multicast security context.
@@ -158,8 +158,7 @@ The following table summarizes the list of multicast control messages
 
 ### PackageVersionReq & Ans
 
-The <strong>PackageVersionReq</strong> command has no payload.
-
+The ***PackageVersionReq** command has no payload.
 The end-device answers with a <strong>PackageVersionAns</strong> command with the following payload.
 
 <table>
@@ -180,29 +179,171 @@ The end-device answers with a <strong>PackageVersionAns</strong> command with th
     </tbody>
 </table>
 
-### Conventions
+*PackageIdentifier uniquely* identifies the package. For the “multicast control package” this identifier is 2.
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in \[RFC2119\].
+*PackageVersion* corresponds to the version of the package specification implemented by the end-device. 
 
-All sections and appendixes, except "Scope" and "Introduction", are normative, unless they are explicitly indicated to be informative.
+### McGroupStatusReq & Ans
 
-### Definitions
+The McGroupStatusReq command has a single byte payload.
 
 <table>
-    <caption>Definitions</caption>
-        <tbody>
-            <tr>
-                <td><strong>LwM2M Bootstrap-Server Account</strong></td>
-                <td>LwM2M Security Object Instance with Bootstrap-Server Resource set to 'true'.</td>
-            </tr>
-            <tr>
-                <td><strong>LwM2M Server Account</strong></td>
-                <td>LwM2M Security Object Instance with Bootstrap-Server Resource set to 'false' and associated LwM2M Server Object Instance.</td>
-            </tr>
-        </tbody>            
+    <caption>McGroupStatusReq </caption>
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Size(bytes)</th>
+        </tr>
+        <tr>
+            <td>CmdMask</td>
+            <td>1</td>
+        </tr>
+    </tbody>
 </table>
 
-Kindly consult [\[OMADICT\]](http://openmobilealliance.org/documents/dictionary/OMA-ORG-Dictionary-V2_9-20120626-A.pdf) for more definitions used in this document.
+Where:
+
+<table>
+    <caption>McGroupStatusReq CmdMask field</caption>
+    <thead>
+        <tr>
+            <th>CmdMask Fields</th>
+            <th>Size(bits)</th>
+        </tr>
+        <tr>
+            <td>RFU</td>
+            <td>4 bits</td>
+        </tr>
+	 <tr>
+            <td>ReqGroupMask</td>
+            <td>4 bits</td>
+        </tr>
+    </tbody>
+</table>
+
+The *ReqGroupMask* bit mask defines the multicast groups whose status should be reported by the end-device.  ReqGroupMask[n] = 1 means that the nth multicast group status SHOULD be included in the answer. ReqGroupMask[n] = 0 means that this group SHALL NOT be included in the answer.
+
+The end-device responds to the McGroupStatusReq command with a McGroupStatusAns with the following payload:
+
+<table>
+    <caption> McGroupStatusAns</caption>
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Size(bytes)</th>
+        </tr>
+        <tr>
+            <td>status/td>
+            <td>1</td>
+        </tr>
+	 <tr>
+            <td>Optional list of [McGroupID+McAddr]</td>
+            <td>5xNbItems</td>
+        </tr>
+    </tbody>
+</table>
+
+The status field encodes the following information:
+
+<table>
+    <caption>McGroupStatusAns Status field</caption>
+    <thead>
+        <tr>
+            <th>Status Fields</th>
+            <th>Size(bits)</th>
+        </tr>
+        <tr>
+            <td>RFU</td>
+            <td>1 bit</td>
+        </tr>
+	 <tr>
+            <td>NbTotalGroups</td>
+            <td>3bits</td>
+        </tr>
+	 <tr>
+            <td>AnsGroupMask</td>
+            <td>4bits</td>
+        </tr>
+    </tbody>
+</table>
+
+*AnsGroupMask* is a bit mask describing which groups are listed in the report. If the end-device cannot report the status of the multicast groups specified by the *ReqGroupMask* field of the request, the end-device SHALL discard the nth last groups (starting with the highest GroupID) until the answer fits. In that case, the *AnsGroupMask* mask is different from the *ReqGroupMask*. In that case the server can get the status of the groups not listed by issuing a new McGroupStatusReq command with another *RegGroupMask* field.  If all groups requested can be listed, *AnsGroupMask8 == *ReqGroupMask*.
+
+*NbTotalGroups* is the number of multicast groups currently defined in the end-device. The valid range is [0:4].
+
+Each record consists of 5 bytes [McGroupID + McAddr].
+McGroupID and McAddr are provided to the end-device by McGroupSetupReq.
+
+### McGroupSetupReq & Ans
+
+This command is used to create or modify the parameters of a multicast group.
+The payload of the message is:
+
+<table>
+    <caption>McGroupStatusAns Status field</caption>
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Size(bytes)</th>
+        </tr>
+        <tr>
+            <td>McGroupIDHeader</td>
+            <td>1 bit</td>
+        </tr>
+	 <tr>
+            <td>McAddr</td>
+            <td>4</td>
+        </tr>
+	 <tr>
+            <td>McKey_encrypted</td>
+            <td>16</td>
+        </tr>
+	  <tr>
+            <td>minMcFCount</td>
+            <td>4</td>
+        </tr>
+	 <tr>
+            <td>maxMcFCount</td>
+            <td>4</td>
+        </tr>
+    </tbody>
+</table>
+
+Where:
+
+<table>
+    <caption>McGroupSetupReq McGroupIDHeader field</caption>
+    <thead>
+        <tr>
+            <th>McGroupIDHeader Fields</th>
+            <th>Size(bits)</th>
+        </tr>
+        <tr>
+            <td>RFU</td>
+            <td>6 bits</td>
+        </tr>
+	 <tr>
+            <td>McGroupID</td>
+            <td>2 bits</td>
+        </tr>
+    </tbody>
+</table>
+
+*McGroupID* is the multicast group ID of the multicast context. An end-device MAY support being part of several multicast group simultaneously. Therefore, all multicast related command MUST always contain an identifier (the McGroupID) of the multicast group being affected. 
+
+```
+Note: The McAddr could be used as a multicast group identifier but this would add a systematic 4 bytes overhead, so a more compact McGroupID is used. Additionally, if MultiCast keys are kept in a Hardware Secure Element that can only keep a few keys, the MCU needs to indicate which key memory slot should be used. Therefore, the Multicast group ID concept is required.  
+```
+An end-device implementing this package SHALL support at least one multicast group. An end-device MAY support up to a maximum of 4 simultaneous multicast contexts.
+
+*McKey_encrypted* is the encrypted multicast group key from which McAppSKey and McNetSKey will be derived. The McKey_encrypted key can be decrypted using the following operation to give the multicast group’s McKey.
+	McKey = aes128_encrypt(McKEKey, McKey_encrypted)
+
+The McKEKey is a __**lifetime end-device specific**__ key used to encrypt Multicast key transported over the air (it is a Key Encryption Key), and may be either:
+
+
+
+
 
 ### Abbreviations
 
