@@ -157,6 +157,7 @@ The following table summarizes the list of multicast control messages
 </table>
 
 ### PackageVersionReq & Ans
+
 The <strong>PackageVersionReq</strong> command has no payload.
 The end-device answers with a <strong>PackageVersionAns</strong> command with the following payload.
 
