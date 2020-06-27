@@ -39,7 +39,8 @@ Inside a given end-device a multicast group is defined by the following paramete
 Because the end-device can be part of up to 4 multicast groups, every multicast control command MUST first define which multicast group is concerned by the command. To minimize the protocol overhead, a 2-bit McGroupID shortcut is used instead of the full 4 bytes multicast group network address in most of the commands defined in this package.An end-device MAY support up to 4 multicast groups contexts defined simultaneously. If an end-device supports N simultaneous multicast group contexts where 1<=N<=4 then the McGroupID can only be in the range [0:N-1].
 
 ```	
-For example, if an end-device is designed to support only a single multicast group, then this group can only have McGroupID=0.
+For example, if an end-device is designed to support only a single multicast group, 
+then this group can only have McGroupID=0.
 ```
 ## Multicast Control Message Package
 
@@ -158,7 +159,7 @@ The following table summarizes the list of multicast control messages
 
 ### PackageVersionReq & Ans
 
-The ***PackageVersionReq** command has no payload.
+The **PackageVersionReq** command has no payload.
 The end-device answers with a <strong>PackageVersionAns</strong> command with the following payload.
 
 <table>
@@ -267,7 +268,7 @@ The status field encodes the following information:
     </tbody>
 </table>
 
-*AnsGroupMask* is a bit mask describing which groups are listed in the report. If the end-device cannot report the status of the multicast groups specified by the *ReqGroupMask* field of the request, the end-device SHALL discard the nth last groups (starting with the highest GroupID) until the answer fits. In that case, the *AnsGroupMask* mask is different from the *ReqGroupMask*. In that case the server can get the status of the groups not listed by issuing a new McGroupStatusReq command with another *RegGroupMask* field.  If all groups requested can be listed, *AnsGroupMask8 == *ReqGroupMask*.
+*AnsGroupMask* is a bit mask describing which groups are listed in the report. If the end-device cannot report the status of the multicast groups specified by the *ReqGroupMask* field of the request, the end-device SHALL discard the nth last groups (starting with the highest GroupID) until the answer fits. In that case, the *AnsGroupMask* mask is different from the *ReqGroupMask*. In that case the server can get the status of the groups not listed by issuing a new McGroupStatusReq command with another *RegGroupMask* field.  If all groups requested can be listed, *AnsGroupMask8* == *ReqGroupMask*.
 
 *NbTotalGroups* is the number of multicast groups currently defined in the end-device. The valid range is [0:4].
 
@@ -288,7 +289,7 @@ The payload of the message is:
         </tr>
         <tr>
             <td>McGroupIDHeader</td>
-            <td>1 bit</td>
+            <td>1</td>
         </tr>
 	 <tr>
             <td>McAddr</td>
@@ -332,7 +333,10 @@ Where:
 *McGroupID* is the multicast group ID of the multicast context. An end-device MAY support being part of several multicast group simultaneously. Therefore, all multicast related command MUST always contain an identifier (the McGroupID) of the multicast group being affected. 
 
 ```
-Note: The McAddr could be used as a multicast group identifier but this would add a systematic 4 bytes overhead, so a more compact McGroupID is used. Additionally, if MultiCast keys are kept in a Hardware Secure Element that can only keep a few keys, the MCU needs to indicate which key memory slot should be used. Therefore, the Multicast group ID concept is required.  
+Note: The McAddr could be used as a multicast group identifier but this would add a systematic 4
+bytes overhead, so a more compact McGroupID is used. Additionally, if MultiCast keys are kept in a
+Hardware Secure Element that can only keep a few keys, the MCU needs to indicate which key memory
+slot should be used. Therefore, the Multicast group ID concept is required.
 ```
 An end-device implementing this package SHALL support at least one multicast group. An end-device MAY support up to a maximum of 4 simultaneous multicast contexts.
 
@@ -355,6 +359,11 @@ McAppSKey = aes128_encrypt(McKey, 0x01 | McAddr | pad16)
 McNetSKey = aes128_encrypt(McKey, 0x02 | McAddr | pad16)
 
 The multicast key derivation scheme is summarized in the following diagram.
+
+<figure class="text-center">
+      <img src="images/The multicast key derivation scheme.svg" alt="The multicast key derivation scheme">
+      <figcaption>The multicast key derivation scheme</figcaption>
+</figure>
 
 ```
 Note: using a Key Encryption Key to transport the multicast group McKey allows for a completely secure multicast scheme when using a hardware secure element, when the secure element does not export the McKey, McAppSKey, and McNwkSKey to the outside. It does not increase the security if a full software implementation is used in the end-device. However, for compatibility reason it is recommended to systematically use this scheme.
@@ -834,6 +843,3 @@ LoRa Alliance™
 Fremont, CA 94538
 United States
 Note: All Company, brand and product names may be trademarks that are the sole property of their respective owners.
-
-
-
