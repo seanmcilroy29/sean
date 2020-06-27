@@ -366,7 +366,11 @@ The multicast key derivation scheme is summarized in the following diagram.
 </figure>
 
 ```
-Note: using a Key Encryption Key to transport the multicast group McKey allows for a completely secure multicast scheme when using a hardware secure element, when the secure element does not export the McKey, McAppSKey, and McNwkSKey to the outside. It does not increase the security if a full software implementation is used in the end-device. However, for compatibility reason it is recommended to systematically use this scheme.
+Note: using a Key Encryption Key to transport the multicast group McKey allows for a completely
+secure multicast scheme when using a hardware secure element, when the secure element does not export
+the McKey, McAppSKey, and McNwkSKey to the outside. It does not increase the security if a full
+software implementation is used in the end-device. However, for compatibility reason it is
+recommended to systematically use this scheme.
 ```
 
 The *minMcFCount* field is the next frame counter value of the multicast downlink to be sent by the server for this group. This information is required in case an end-device is added to a group that already exists. The end-device MUST reject any downlink multicast frame using this group multicast address if the frame counter is < minMcFCount. 
@@ -578,7 +582,9 @@ The maximum duration in second is 2TimeOut (Example: TimeOut=8 means 256 seconds
 This is a maximum duration because the end-device’s application might decide to revert to class A before the end of the session, this decision is application specific. 
 
 ```
-For example, the multicast session might be used to broadcast a firmware upgrade file. In that case the end-device might end the multicast session has soon as the full file is received without waiting for TimeOut.
+For example, the multicast session might be used to broadcast a firmware upgrade file. In that case
+the end-device might end the multicast session has soon as the full file is received without waiting
+for TimeOut.
 ```
 
 *DlFrequ:* Encodes the frequency used for the multicast. This field is a 24 bits unsigned integer. The actual channel frequency in Hz is 100 x DlFrequ whereby values representing frequencies below 100 MHz are reserved for future use. This allows setting the frequency of a channel anywhere between 100 MHz to 1.67 GHz in 100 Hz steps.
@@ -737,7 +743,9 @@ And where:
 The maximum duration in second is 128*2TimeOut (Example: TimeOut=8 corresponds roughly to 9.1hours).
 
 ```
-Attention: For classB TimeOut is expressed in BeaconPeriod (128sec), whereas it is expressed in seconds for classC. This is because a classB multicast session is heavily duty-cycled and is likely to last a lot longer than a classC session.
+Attention: For classB TimeOut is expressed in BeaconPeriod (128sec), whereas it is expressed in 
+seconds for classC. This is because a classB multicast session is heavily duty-cycled and is likely
+to last a lot longer than a classC session.
 ```
 This is a maximum duration because the end-device’s application might decide to revert to class A before the end of the session, this decision is application specific. 
 
@@ -749,7 +757,7 @@ This field has the same meaning and coding as LoRaWAN NewChannelReq MAC command 
 In regions where the classB beacon is transmitted following a frequency hopping pattern, DlFrequ=0 signals the end-device to use the default classB default frequency hopping scheme. That scheme is defined in the classB section of the LoRaWAN specification. In that case, Class B downlinks use a channel which is a function of the Time field of the last beacon (see Beacon Frame content) and the multicast address McAddr.
 
 ```
-Class B downlink channel=[McAddr+floor ((Beacon_Time )/(Beacon_period))]  modulo NbChannel
+Class B downlink channel=[McAddr+floor ((Beacon_Time )/(Beacon_period))] modulo NbChannel
 ```
 * Whereby Beacon_Time is the 32-bit Time field of the current beacon period
 * Beacon_period is the length of the beacon period (defined as 128sec in the specification)
