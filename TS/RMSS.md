@@ -837,6 +837,7 @@ TBD	To Be Done
 ### References
 
 [LoRaWAN 1.0.2]: LoRaWANTM 1.0.2 Specification, LoRa Alliance, July 2016
+
 [LoRaWAN 1.1]: LoRaWANTM 1.1 Specification, LoRa Alliance, October 11, 2017
 
 ## NOTICE OF USE AND DISCLOSURE
