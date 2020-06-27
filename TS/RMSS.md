@@ -1,4 +1,4 @@
-**LoRaWAN Remote Multicast Setup Specification v1.0.0**
+# **LoRaWAN Remote Multicast Setup Specification v1.0.0**
 
 Copyright © 2018 LoRa Alliance, Inc.  All rights reserved.
 
@@ -20,9 +20,10 @@ LoRa Alliance™
 5177 Brandin Court
 Fremont, CA 94538
 United States
+
 Note: All Company, brand and product names may be trademarks that are the sole property of their respective owners.
  
-**LoRaWAN Remote Multicast Setup Specification**
+# **LoRaWAN Remote Multicast Setup Specification**
 
 **Authored by the FUOTA Working Group of the LoRa Alliance Technical Committee** 
 
