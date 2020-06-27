@@ -878,7 +878,7 @@ If no errors are present, the TimeToStart field encodes the number of seconds fr
 
 
 <table>
-    <caption>McClassBSessionAns</caption>
+    <caption>Glossary</caption>
     <thead>
         <tr>
             <th>Abbriviation</th>
