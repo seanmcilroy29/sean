@@ -872,7 +872,7 @@ Where:
 
 *McGroupUndefined* is set 1 if the McGroupID specified by the command is not defined in the end-device (was not created before calling this command).
 
-If no errors are present, the TimeToStart field encodes the number of seconds from the **_McClassBSessionAns** uplink to the beginning of the multicast fragmentation session. This allows the server to check that the end-device clock is roughly synchronized and that it will effectively start acquiring the classB beacon at the right moment (before the beginning of the classB multicast session with some margin).
+If no errors are present, the TimeToStart field encodes the number of seconds from the **_McClassBSessionAns_** uplink to the beginning of the multicast fragmentation session. This allows the server to check that the end-device clock is roughly synchronized and that it will effectively start acquiring the classB beacon at the right moment (before the beginning of the classB multicast session with some margin).
 
 ## Glossary
 
