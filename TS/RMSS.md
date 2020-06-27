@@ -205,8 +205,8 @@ The following table summarizes the list of multicast control messages
 
 ### PackageVersionReq & Ans
 
-The **PackageVersionReq** command has no payload.
-The end-device answers with a **PackageVersionAns** command with the following payload.
+The **_PackageVersionReq** command has no payload.
+The end-device answers with a **_PackageVersionAns** command with the following payload.
 
 <table>
     <caption>PackageVersionAns</caption>
@@ -327,7 +327,7 @@ This command is used to create or modify the parameters of a multicast group.
 The payload of the message is:
 
 <table>
-    <caption>McGroupStatusAns Status field</caption>
+    <caption>McGroupSetupReq</caption>
     <thead>
         <tr>
             <th>Field</th>
@@ -423,9 +423,9 @@ The *minMcFCount* field is the next frame counter value of the multicast downlin
 
 *McAddr* is the multicast group network address. McAddr is negotiated off-band by the application server with the network server.
 
-*maxMcFCount8 specifies the life time of this multicast group expressed as a maximum number of frames. The end-device will only accept a multicast downlink frame if the 32bits frame counter value minMcFCount ≤ McFCount < maxMcFCount.
+*maxMcFCount* specifies the life time of this multicast group expressed as a maximum number of frames. The end-device will only accept a multicast downlink frame if the 32bits frame counter value minMcFCount ≤ McFCount < maxMcFCount.
 
-The end-device acknowledges the reception of this message by sending an *McGroupSetupAns8 message with the following payload:
+The end-device acknowledges the reception of this message by sending an **_McGroupSetupAns** message with the following payload:
 
 <table>
     <caption>McGroupSetupAns</caption>
@@ -434,13 +434,17 @@ The end-device acknowledges the reception of this message by sending an *McGroup
             <th>Field</th>
             <th>Size (bytes)</th>
         </tr>
+	<tr>
+            <td>McGroupIDHeader</td>
+            <td>1</td>
+        </tr>
     </tbody>
 </table>
 
 Where:
 
 <table>
-    <caption>McGroupIDHeader Fields</caption>
+    <caption>McGroupSetupAns McGroupIDHeader field</caption>
     <thead>
         <tr>
             <th>McGroupIDHeader Fields</th>
@@ -541,7 +545,7 @@ Where:
     </tbody>
 </table>
 
-*MCGroupUndefined8 is set 1 if the McGroupID specified by the command is not defined in the end-device (was not created before calling the delete command).
+*MCGroupUndefined* is set 1 if the McGroupID specified by the command is not defined in the end-device (was not created before calling the delete command).
 
 ### McClassCSessionReq & Ans
 
@@ -621,7 +625,7 @@ And where:
 
 *McGroupID* is the identifier of the multicast group being used.
 
-SessionTime is the start of the Class C window, and is expressed as the time in seconds since 00:00:00, Sunday 6th of January 1980 (start of the GPS epoch) modulo 2^32. Note that this is the same format as the Time field in the beacon frame.
+*SessionTime* is the start of the Class C window, and is expressed as the time in seconds since 00:00:00, Sunday 6th of January 1980 (start of the GPS epoch) modulo 2^32. Note that this is the same format as the Time field in the beacon frame.
 
 *TimeOut* encodes the maximum length in seconds of the multicast session (max time the end-device stays in classC before reverting to class A to save battery)
 The maximum duration in second is 2TimeOut (Example: TimeOut=8 means 256 seconds)
@@ -634,7 +638,7 @@ for TimeOut.
 ```
 
 *DlFrequ:* Encodes the frequency used for the multicast. This field is a 24 bits unsigned integer. The actual channel frequency in Hz is 100 x DlFrequ whereby values representing frequencies below 100 MHz are reserved for future use. This allows setting the frequency of a channel anywhere between 100 MHz to 1.67 GHz in 100 Hz steps.
-This field has the same meaning and coding as LoRaWAN NewChannelReq MAC command ‘Freq’ field.
+This field has the same meaning and coding as LoRaWAN *NewChannelReq* MAC command ‘Freq’ field.
 
 *DR:* index of the data rate used for the multicast. Uses the same look-up table than the one used by the LinkAdrReq MAC command of the LoRaWAN protocol.
 
@@ -690,13 +694,13 @@ Where:
     </tbody>
 </table>
 
-*FreqError8 bit is set to 1 if the DLFrequ frequency set by the network is not usable for the end-device.
+*FreqError* bit is set to 1 if the DLFrequ frequency set by the network is not usable for the end-device.
 
 *DRError* bit is set to 1 if the classC downlink Data Rate set by the network is not defined.
 
 *McGroupUndefined* is set 1 if the McGroupID specified by the command is not defined in the end-device (was not created before calling this command).
 
-If no errors are present, the *TimeToStart* field encodes the number of seconds from the **McClassCSessionAns** uplink to the beginning of the multicast session. This allows the server to check that the end-device clock is well synchronized and that the end-device will effectively switch to classC exactly at the right moment (with second accuracy). This is possible because all uplinks are accurately time stamped by the network gateways (at least with an accuracy better than the second).
+If no errors are present, the *TimeToStart* field encodes the number of seconds from the **_McClassCSessionAns** uplink to the beginning of the multicast session. This allows the server to check that the end-device clock is well synchronized and that the end-device will effectively switch to classC exactly at the right moment (with second accuracy). This is possible because all uplinks are accurately time stamped by the network gateways (at least with an accuracy better than the second).
 
 ### McClassBSessionReq & Ans
 
@@ -709,10 +713,6 @@ The payload of the message is:
         <tr>
             <th>Field</th>
             <th>Size (bytes)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>3bits</td>
         </tr>
 	<tr>
             <td>McGroupIDHeader</td>
@@ -795,10 +795,10 @@ to last a lot longer than a classC session.
 ```
 This is a maximum duration because the end-device’s application might decide to revert to class A before the end of the session, this decision is application specific. 
 
-*Periodicity* encodes the classB ping slot periodicity for the multicast group. The encoding format is the same than for the Periodicity field of the **PingSlotInfoReq** classB MAC command defined in LoRaWAN.
+*Periodicity* encodes the classB ping slot periodicity for the multicast group. The encoding format is the same than for the Periodicity field of the **_PingSlotInfoReq** classB MAC command defined in LoRaWAN.
 
 *DlFrequ*: Encodes the frequency used for the multicast. This field is a 24 bits unsigned integer. The actual channel frequency in Hz is 100 x DlFrequ whereby values representing frequencies below 100 MHz are reserved for future use. This allows setting the frequency of a channel anywhere between 100 MHz to 1.67 GHz in 100 Hz steps. 
-This field has the same meaning and coding as LoRaWAN NewChannelReq MAC command ‘Freq’ field.
+This field has the same meaning and coding as LoRaWAN *NewChannelReq* MAC command 'Freq' field.
 
 In regions where the classB beacon is transmitted following a frequency hopping pattern, DlFrequ=0 signals the end-device to use the default classB default frequency hopping scheme. That scheme is defined in the classB section of the LoRaWAN specification. In that case, Class B downlinks use a channel which is a function of the Time field of the last beacon (see Beacon Frame content) and the multicast address McAddr.
 
@@ -813,7 +813,7 @@ Class B downlink channel=[McAddr+floor ((Beacon_Time )/(Beacon_period))] modulo 
  
 *DR*: index of the data rate used for the classB multicast. Uses the same look-up table than the one used by the LinkAdrReq MAC command of the LoRaWAN protocol.
 
-The end-device acknowledges the reception of this message by sending a **McClassBSessionAns** message on the same port with the following payload:
+The end-device acknowledges the reception of this message by sending a **_McClassBSessionAns** message on the same port with the following payload:
 
 <table>
     <caption>McClassBSessionAns</caption>
@@ -871,12 +871,28 @@ Where:
 
 *McGroupUndefined* is set 1 if the McGroupID specified by the command is not defined in the end-device (was not created before calling this command).
 
-If no errors are present, the TimeToStart field encodes the number of seconds from the **McClassBSessionAns** uplink to the beginning of the multicast fragmentation session. This allows the server to check that the end-device clock is roughly synchronized and that it will effectively start acquiring the classB beacon at the right moment (before the beginning of the classB multicast session with some margin).
+If no errors are present, the TimeToStart field encodes the number of seconds from the **_McClassBSessionAns** uplink to the beginning of the multicast fragmentation session. This allows the server to check that the end-device clock is roughly synchronized and that it will effectively start acquiring the classB beacon at the right moment (before the beginning of the classB multicast session with some margin).
 
 ## Glossary
 
-AS	Application Server
-TBD	To Be Done
+
+<table>
+    <caption>McClassBSessionAns</caption>
+    <thead>
+        <tr>
+            <th>Abbriviation</th>
+            <th>Meaning</th>
+        </tr>
+        <tr>
+            <td>AS</td>
+            <td>Application Server</td>
+        </tr>
+	<tr>
+            <td>TBD</td>
+            <td>To Be Done</td>
+        </tr>
+    </tbody>
+</table>
 
 ## Bibliography 
 
@@ -887,6 +903,7 @@ TBD	To Be Done
 [LoRaWAN 1.1]: LoRaWANTM 1.1 Specification, LoRa Alliance, October 11, 2017
 
 ## NOTICE OF USE AND DISCLOSURE
+
 Copyright © LoRa Alliance, Inc. (2018). All Rights Reserved.
 
 The information within this document is the property of the LoRa Alliance (“The Alliance”) and its use and disclosure are subject to LoRa Alliance Corporate Bylaws, Intellectual Property Rights (IPR) Policy and Membership Agreements.
