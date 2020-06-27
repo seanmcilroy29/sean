@@ -1,5 +1,4 @@
 **LoRaWAN Remote Multicast Setup Specification v1.0.0**
-
 Copyright © 2018 LoRa Alliance, Inc.  All rights reserved.
 
 **NOTICE OF USE AND DISCLOSURE**
