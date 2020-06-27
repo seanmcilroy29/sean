@@ -426,7 +426,7 @@ The *minMcFCount* field is the next frame counter value of the multicast downlin
 
 *maxMcFCount* specifies the life time of this multicast group expressed as a maximum number of frames. The end-device will only accept a multicast downlink frame if the 32bits frame counter value minMcFCount ≤ McFCount < maxMcFCount.
 
-The end-device acknowledges the reception of this message by sending an **_McGroupSetupAns** message with the following payload:
+The end-device acknowledges the reception of this message by sending an **_McGroupSetupAns_** message with the following payload:
 
 <table>
     <caption>McGroupSetupAns</caption>
@@ -701,7 +701,7 @@ Where:
 
 *McGroupUndefined* is set 1 if the McGroupID specified by the command is not defined in the end-device (was not created before calling this command).
 
-If no errors are present, the *TimeToStart* field encodes the number of seconds from the **_McClassCSessionAns** uplink to the beginning of the multicast session. This allows the server to check that the end-device clock is well synchronized and that the end-device will effectively switch to classC exactly at the right moment (with second accuracy). This is possible because all uplinks are accurately time stamped by the network gateways (at least with an accuracy better than the second).
+If no errors are present, the *TimeToStart* field encodes the number of seconds from the **_McClassCSessionAns_** uplink to the beginning of the multicast session. This allows the server to check that the end-device clock is well synchronized and that the end-device will effectively switch to classC exactly at the right moment (with second accuracy). This is possible because all uplinks are accurately time stamped by the network gateways (at least with an accuracy better than the second).
 
 ### McClassBSessionReq & Ans
 
