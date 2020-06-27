@@ -796,7 +796,7 @@ to last a lot longer than a classC session.
 ```
 This is a maximum duration because the end-device’s application might decide to revert to class A before the end of the session, this decision is application specific. 
 
-*Periodicity* encodes the classB ping slot periodicity for the multicast group. The encoding format is the same than for the Periodicity field of the **_PingSlotInfoReq** classB MAC command defined in LoRaWAN.
+*Periodicity* encodes the classB ping slot periodicity for the multicast group. The encoding format is the same than for the Periodicity field of the **_PingSlotInfoReq_** classB MAC command defined in LoRaWAN.
 
 *DlFrequ*: Encodes the frequency used for the multicast. This field is a 24 bits unsigned integer. The actual channel frequency in Hz is 100 x DlFrequ whereby values representing frequencies below 100 MHz are reserved for future use. This allows setting the frequency of a channel anywhere between 100 MHz to 1.67 GHz in 100 Hz steps. 
 This field has the same meaning and coding as LoRaWAN *NewChannelReq* MAC command 'Freq' field.
