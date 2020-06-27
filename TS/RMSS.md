@@ -207,7 +207,7 @@ The following table summarizes the list of multicast control messages
 ### PackageVersionReq & Ans
 
 The **_PackageVersionReq** command has no payload.
-The end-device answers with a **_PackageVersionAns** command with the following payload.
+The end-device answers with a **_PackageVersionAns_** command with the following payload.
 
 <table>
     <caption>PackageVersionAns</caption>
