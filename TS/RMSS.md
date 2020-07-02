@@ -1,208 +1,204 @@
-# **LoRaWAN Remote Multicast Setup Specification v1.0.0**
+# AV1 Codec ISO Media File Format Binding
 
-Copyright © 2018 LoRa Alliance, Inc.  All rights reserved.
+v1.0.0, 7 September 2018
 
-**NOTICE OF USE AND DISCLOSURE**
+**This version:**
+https://aomediacodec.github.io/av1-isobmff/
 
-Copyright © LoRa Alliance, Inc. (2018). All Rights Reserved. 
+**Issue Tracking:**
+GitHub
 
-The information within this document is the property of the LoRa Alliance (“The Alliance”) and its use and disclosure are subject to LoRa Alliance Corporate Bylaws, Intellectual Property Rights (IPR) Policy and Membership Agreements.
+**Editors:**
+Cyril Concolato (Netflix)
+Tom Finegan (Google)
 
-Elements of LoRa Alliance specifications may be subject to third party intellectual property rights, including without limitation, patent, copyright or trademark rights (such a third party may or may not be a member of LoRa Alliance). The Alliance is not responsible and shall not be held responsible in any manner for identifying or failing to identify any or all such third party intellectual property rights.
+Copyright 2018, The Alliance for Open Media
 
-This document and the information contained herein are provided on an “AS IS” basis and THE ALLIANCE DISCLAIMS ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOTLIMITED TO (A) ANY WARRANTY THAT THE USE OF THE INFORMATION HEREINWILL NOT INFRINGE ANY RIGHTS OF THIRD PARTIES (INCLUDING WITHOUTLIMITATION ANY INTELLECTUAL PROPERTY RIGHTS INCLUDING PATENT, COPYRIGHT OR TRADEMARK RIGHTS) OR (B) ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,TITLE OR NONINFRINGEMENT.
+Licensing information is available at http://aomedia.org/license/
 
-IN NO EVENT WILL THE ALLIANCE BE LIABLE FOR ANY LOSS OF PROFITS, LOSS OF BUSINESS, LOSS OF USE OF DATA, INTERRUPTION OFBUSINESS, OR FOR ANY OTHER DIRECT, INDIRECT, SPECIAL OR EXEMPLARY, INCIDENTIAL, PUNITIVE OR CONSEQUENTIAL DAMAGES OF ANY KIND, IN CONTRACT OR IN TORT, IN CONNECTION WITH THIS DOCUMENT OR THE INFORMATION CONTAINED HEREIN, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH LOSS OR DAMAGE. 
-
-The above notice and this paragraph must be included on all copies of this document that are made.
-
-LoRa Alliance™
-5177 Brandin Court
-Fremont, CA 94538
-United States
-
-Note: All Company, brand and product names may be trademarks that are the sole property of their respective owners.
+The MATERIALS ARE PROVIDED “AS IS.” The Alliance for Open Media, its members, and itscontributors expressly disclaim any warranties (express, implied, or otherwise), including implied war-ranties of merchantability, non-infringement, fitness for a particular purpose, or title, related to the ma-terials. The entire risk as to implementing or otherwise using the materials is assumed by the imple-menter and user. IN NO EVENT WILL THE ALLIANCE FOR OPEN MEDIA, ITS MEMBERS, ORCONTRIBUTORS BE LIABLE TO ANY OTHER PARTY FOR LOST PROFITS OR ANY FORMOF INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES OF ANY CHAR-ACTER FROM ANY CAUSES OF ACTION OF ANY KIND WITH RESPECT TO THIS DELIV-ERABLE OR ITS GOVERNING AGREEMENT, WHETHER BASED ON BREACH OF CON-TRACT, TORT (INCLUDING NEGLIGENCE), OR OTHERWISE, AND WHETHER OR NOT THEOTHER MEMBER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-# **LoRaWAN Remote Multicast Setup Specification**
+**Abstract** 
+This document specifies the storage format for [AV1] bitstreams in [ISOBMFF] tracks as well as in[CMAF] files. 
+ 
+## Bitstream features overview 
 
-**Authored by the FUOTA Working Group of the LoRa Alliance Technical Committee** 
+An *_AV1 bitstream_* is composed of a sequence of *OBUs*, grouped into *Temporal Units*.
 
-**Technical Committee Chairs:**
-N.SORNIN (Semtech), A.YEGIN (Actility)
+OBUs are made of a 1 or 2 bytes header, identifying in particular the type of OBU, followed by an op-tional length field and by an optional payload, whose presence and content depend on the OBU type.Depending on its type, an OBU can carry configuration information, metadata, or coded video data.
 
-**Working Group Chairs:**
-J.CATALANO (Kerlink), N.SORNIN (Semtech)
-
-**Editor:**
-J.CATALANO (Kerlink)
-
-**Contributors:**
-J.CATALANO (Kerlink), J-P.COUPIGNY (STMicroelectronics), J.DELCLEF (STMicroelectronics), A.GRIGORE (Flashnet), J.SCHLARB (Comcast), N.SORNIN (Semtech), J.STOKKING (The Things Network Foundation), A.YEGIN (Actility)
-
-**Version:** v1.0.0
-**Date:** September 10, 2018
-**Status:** Final release
-
-
-
-## Conventions
-
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED”, “MAY", and “OPTIONAL" in this document are to be interpreted as described in RFC 2119.
-
-The octet order over the air for all multi-octet fields is little endian (Least significant byte is sent first).
-
-
-## Introduction
-
-This document defines an application layer messaging package running over LoRaWAN to perform the following operations on a fleet of end-devices:
-* Program a multicast distribution window into a group of end-devices
-* Having all end-devices of the group switch to ClassB or ClassC temporarily at the beginning of the slot
-* Close the distribution window and revert to normal operation (e.g. return to Class A, or change to a different periodicity in Class B)
-
-All messages described in this document are transported as application layer messages. As such, all unicast messages (uplink or downlink) are encrypted by the LoRaWAN MAC layer using the end-device’s AppSKey. Downlink multicast messages are encrypted using a multicast group McAppSKey common to all end-devices of the group. The setup of the group as well as means to convey the MCAppSKey are described in the document.
-The **“multicast control”** package can be used to:
--	Remotely create a multicast group security context inside a group of end-devices
--	Report the list of multicast context existing in the end-device
--	Remotely delete a multicast security context.
--	Program a classC multicast session
--	Program a classB multicast session
-
-This package uses a dedicated port to separate its traffic from the rest of the applicative traffic.
-
-
-## Multicast group context definition
-
-This package makes the following assumptions.
-Inside a given end-device a multicast group is defined by the following parameters (the multicast group context):
-
-1. A McGroupID:  an integer in [0:3], the index of the multicast group. This index is used as an end-device specific shortcut to reference one of the multicast groups defined inside the end-device. An end-device supports a maximum of 4 simultaneous multicast groups, and a minimum of 0.
-	
-2. Multicast address:  the 4 bytes network address of the multicast group, common to all end-devices of the group. 
-	
-3. A multicast group key (McKey) from which are derived a McAppSKey and a McNwkSKey. The McKey is multicast group specific (different for every multicast group), but all end-devices of a given multicast group have the same McKey associated to this group 
-
-4. A frame counter.
-	
-Because the end-device can be part of up to 4 multicast groups, every multicast control command MUST first define which multicast group is concerned by the command. To minimize the protocol overhead, a 2-bit McGroupID shortcut is used instead of the full 4 bytes multicast group network address in most of the commands defined in this package.An end-device MAY support up to 4 multicast groups contexts defined simultaneously. If an end-device supports N simultaneous multicast group contexts where 1<=N<=4 then the McGroupID can only be in the range [0:N-1].
-
-```	
-For example, if an end-device is designed to support only a single multicast group, 
-then this group can only have McGroupID=0.
 ```
-## Multicast Control Message Package
+NOTE: Tile List OBUs defined in the [AV1] specification are not supported in the current versionof this specification. 
+A future version of the specification may do so.
+```
+Temporal Units are processed by a decoder in the order given by the bitstream. Each Temporal Unit isassociated with a presentation time. Some Temporal Units may contain multiple frames to be decodedbut only one is presented.
 
-The identifier of the multicast control package is 2. The version of this package is version 1.
+## Basic Encapsulation Scheme
 
-The following messages are sent to each end-device individually using Unicast downlink on a port specifically used for the multicast package. The default port value is 200. These messages MUST NOT be sent using multicast. If these messages are received on a multicast address the end-device MUST drop them silently.
+This section describes the basic data structures used to signal encapsulation of *AV1 bitstreams* in [ISOBMFF] containers.
+
+## General Requirements & Brands
+
+A file conformant to this specification satisfies the following:
+
+It SHALL conform to the normative requirements of [ISOBMFF]
+It SHALL have the *‘av01’* brand among the compatible brands array of the FileTypeBox
+It SHALL contain at least one track using an *AV1SampleEntry*
+It SHOULD indicate a structural ISOBMFF brand among the compatible brands array of the File-TypeBox, such as *‘iso6’*
+It MAY indicate CMAF brands as specified in *§3 CMAF AV1 track format*
+It MAY indicate other brands not specified in this document provided that the associated require-ments do not conflict with those given in this specification
+
+Parsers SHALL support the structures required by the *‘iso6’* brand and MAY support structures re-quired by further ISOBMFF structural brands.
+
+## AV1 Sample Entry
+
+### Definitions
+
+```
+Sample Entry Type: **av01**
+Container:         Sample Description Box ('stsd')
+Mandatory:         Yes
+Quantity:          One or more.
+```
+### Description
+The **_AV1SampleEntry_** sample entry identifies that the track contains *AV1 Samples*, and uses an *AV1-CodecConfigurationBox*.
+
+### Syntax
+```
+class AV1SampleEntry extends VisualSampleEntry('av01') {  
+AV1CodecConfigurationBox config;
+}
+```
+### Semantics
+
+The **_width_** and **_height_** fields of the *VisualSampleEntry* SHALL equal the values of *max_frame_width_minus_1* + 1 and *max_frame_height_minus_1* + 1 of the *Sequence Header OBU* applying to the samples associated with this sample entry.
+
+The width and height in the TrackHeaderBox SHOULD equal, respectively, the maximum Render-Width, called MaxRenderWidth, and the maximum RenderHeight, called MaxRenderHeight, of all theframes associated with this sample entry. Additionally, if MaxRenderWidth and MaxRenderHeightvalues do not equal respectively the *max_frame_width_minus_1* + 1 and *max_frame_height_minus_1* + 1 values of the *Sequence Header OBU*, a PixelAspectRatioBox box SHALL be present in the sampleentry and set such that
+
+```
+hSpacing / vSpacing = MaxRenderWidth * (max_frame_height_minus_1 + 1) / 
+((max_frame_width_minus_1 + 1) * MaxRenderHeig
+```
+The **_compressorname_** field of the *VisualSampleEntry* is an informative name. It is formatted in a fixed32-byte field, with the first byte set to the number of bytes to be displayed, followed by that number ofbytes of displayable data, followed by padding to complete 32 bytes total (including the size byte).The value "\012AOM Coding" is RECOMMENDED; the first byte is a count of the remaining bytes, here represented by \012, which (being octal 12) is decimal 10, the number of bytes in the rest of thestring.
+
+```
+NOTE: Parsers may ignore the value of the compressorname field. 
+It is specified in this documentsimply for legacy and backwards compatibility reasons.
+```
+
+The **_config_** field SHALL contain an*AV1CodecConfigurationBox* that applies to the samples associat-ed with this sample entry
+
+```
+NOTE: Multiple instances of *AV1SampleEntry* may be required when the track contains samples
+requiring a *AV1CodecConfigurationBox* with different characteristics.
+```
+
+Optional boxes not specifically mentioned here can be present, in particular those indicated in the defi-nition of the *VisualSampleEntry* in [ISOBMFF].
+
+## AV1 Codec Configuration Box
+### Definition
+
+```
+Box Type:  av1C
+Container: AV1 Sample Entry ('av01')
+Mandatory: Yes
+Quantity:  Exactly OneThe
+```
+
+### Description
+
+The **_AV1CodecConfigurationBox_** contains decoder configuration information that SHALL be validfor every sample that references the sample entry.
+
+### Syntax
+```
+class AV1CodecConfigurationBox extends Box('av1C'){
+  AV1CodecConfigurationRecord av1Config;
+}
+
+aligned (8) class AV1CodecConfigurationRecord {
+ unsigned int (1) marker = 1;
+ unsigned int (7) version = 1;
+ unsigned int (3) seq_profile;
+ unsigned int (5) seq_level_idx_0;
+ unsigned int (1) seq_tier_0;
+ unsigned int (1) high_bitdepth;
+ unsigned int (1) twelve_bit;
+ unsigned int (1) monochrome;
+ unsigned int (1) chroma_subsampling_x;
+ unsigned int (1) chroma_subsampling_y;
+ unsigned int (2) chroma_sample_position;
+ unsigned int (3) reserved = 0;
+
+ unsigned int (1) initial_presentation_delay_present;
+ if (initial_presentation_delay_present) {
+ unsigned int (4) initial_presentation_delay_minus_one;  
+ } else {
+  unsigned int (4) reserved = 0;
+ }
+
+  unsigned int (8)[] configOBUs;
+ }
+```
+
+### Semantics
+
+The **_marker_** field SHALL be set to 1.
+
+```
+NOTE: The marker bit ensures that the bit pattern of the first byte of the AV1CodecConfiguration-
+Record cannot be mistaken for an OBU Header byte.
+```
+
+The **_version_** field indicates the version of the AV1CodecConfigurationRecord. The value SHALL beset to 1 for AV1CodecConfigurationRecord.
+
+The **_seq_profile_** field indicates the AV1 profile and SHALL be equal to the seq_profile value from the *Sequence Header OBU*.
+
+The **_seq_level_idx_0_** field indicates the value of seq_level_idx[0] found in the Sequence Header OBU and SHALL be equal to the value of seq_level_idx[0] in the *Sequence Header OBU*.
+
+The **_seq_tier_0_** field indicates the value of seq_tier[0] found in the *Sequence Header OBU* and SHALLbe equal to the value of seq_tier[0] in the *Sequence Header OBU*.
+
+The **_high_bitdepth_** field indicates the value of the *high_bitdepth* flag from the *Sequence Header OBU*.
+
+The **_twelve_bit_** field indicates the value of the *twelve_bit* flag from the *Sequence Header OBU*.
+
+The **_monochrome_** field indicates the value of the *mono_chrome* flag from the *Sequence Header OBU*.
+
+The **_chroma_subsampling_x_** field indicates the *subsampling_x* value from the *Sequence Header OBU*.
+
+The **_chroma_subsampling_y_** field indicates the *subsampling_y* value from the *Sequence Header OBU*.
+
+The **_chroma_sample_position_** field indicates the *chroma_sample_position* value from the *SequenceHeader OBU*.
+
+The **_initial_presentation_delay_present_** field indicates the presence of the initial_presentation_delay_minus_one field.
+
+The **_initial_presentation_delay_minus_one_** field indicates the number of samples (minus one) that need to be decoded prior to starting the presentation of the first sample associated with this sample entry in order to guarantee that each sample will be decoded prior to its presentation time under the constraints of the first level value indicated by *seq_level_idx in* the *Sequence Header OBU* (in the config-OBUs field or in the associated samples). More precisely, the following procedure SHALL not return any error:
+
+- construct a hypothetical bitstream consisting of the OBUs carried in the sample entry followed by the OBUs carried in all the samples referring to that sample entry,
+- set the first *initial_display_delay_minus_1* field of each *Sequence Header OBU* to the number offrames minus one contained in the first *initial_presentation_delay_minus_one* + 1 samples,
+- set the *frame_presentation_time* field of the frame header of each presentable frame such that it matches the presentation time difference between the sample carrying this frame and the previous sample (if it exists, 0 otherwise),
+- apply the decoder model specified in [AV1] to this hypothetical bitstream using the first operating point. If **_buffer_removal_time_** information is present in bitstream for this operating point, the decoding schedule mode SHALL be applied, otherwise the resource availability mode SHALL be applied.
 
 
-All unicast control messages use the same format:
-<table>
-  <tr> <td>Command1</td> <td>Command1 Payload</td> <td>Command2</td> <td>Command2 payload</td> <td>....</td> </tr>
-</table>
 
-A message MAY carry more than one command. The length of each command’s payload is fixed and a function of the command. Commands are executed from first to last. Each command MUST be individually acknowledged by the end-device.
 
-The following table summarizes the list of multicast control messages
 
-<table>
-    <caption>Multicast Control messages summary </caption>
-    <thead>
-        <tr>
-            <th>CID</th>
-            <th>Command name</th>
-            <th>Transmitted by end-device</th>
-            <th>Transmitted by Server</th>
-            <th>Short Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>0x00</td>
-            <td>PackageVersionReq</td>
-            <td></td>
-            <td>x</td>
-            <td>Used by the AS to request the package version implemented by the end-device</td>
-        </tr>
-	    <tr>
-            <td>0x00</td>
-            <td>PackageVersionAns</td>
-            <td>x</td>
-            <td></td>
-            <td>Conveys the answer to PackageVersionReq</td>
-        </tr>
-        <tr>
-            <td>0x01</td>
-            <td>McGroupStatusReq</td>
-            <td></td>
-            <td>x</td>
-            <td>Asks an end-device to list the multicast groups currently configured</td>
-        </tr>
-	<tr>
-            <td>0x01</td>
-            <td>McGoupStatusAns</td>
-            <td>x</td>
-            <td></td>
-            <td>Conveys answer to the McGroupStatus request</td>
-        </tr>
-        <tr>
-            <td>0x02</td>
-            <td>McGroupSetupReq</td>
-            <td></td>
-            <td>x</td>
-            <td>Provides an end-device will all necessary information to join a multicast group</td>
-        </tr>
-        <tr>
-            <td>0x02</td>
-            <td>McGroupSetupAns</td>
-            <td>x</td>
-            <td></td>
-            <td></td>
-        </tr>
-	<tr>
-            <td>0x03</td>
-            <td>McGroupDeleteReq</td>
-            <td></td>
-            <td>x</td>
-            <td>Used to delete a multicast group from an end-device</td>
-        </tr>
-	 <tr>
-            <td>0x03</td>
-            <td>McGroupDeleteAns</td>
-            <td>x</td>
-            <td></td>
-            <td></td>
-        </tr>
-	 <tr>
-            <td>0x04</td>
-            <td>McClassCSessionReq</td>
-            <td></td>
-            <td>x</td>
-            <td>Conveys information about the next classC multicast session the end-device shall join</td>
-        </tr>
-	 <tr>
-            <td>0x04</td>
-            <td>McClassCSessionAns</td>
-            <td>x</td>
-            <td></td>
-            <td></td>
-        </tr>
-	 <tr>
-            <td>0x05</td>
-            <td>McClassBSessionReq</td>
-            <td></td>
-            <td>x</td>
-            <td>Creates a class B multicast session </td>
-        </tr>
-	 <tr>
-            <td>0x05</td>
-            <td>McClassBSessionAns</td>
-            <td>x</td>
-            <td></td>
-            <td></td>
-        </tr>
-    </tbody>
-</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### PackageVersionReq & Ans
 
