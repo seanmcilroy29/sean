@@ -178,24 +178,102 @@ The **_initial_presentation_delay_minus_one_** field indicates the number of sam
 - set the *frame_presentation_time* field of the frame header of each presentable frame such that it matches the presentation time difference between the sample carrying this frame and the previous sample (if it exists, 0 otherwise),
 - apply the decoder model specified in [AV1] to this hypothetical bitstream using the first operating point. If **_buffer_removal_time_** information is present in bitstream for this operating point, the decoding schedule mode SHALL be applied, otherwise the resource availability mode SHALL be applied.
 
+```
+NOTE: With the above procedure, when smooth presentation can be guaranteed after decoding the
+first sample, initial_presentation_delay_minus_one is 0.
+```
+```
+NOTE: Because the above procedure considers all OBUs in all samples associated with a sample
+entry, if these OBUS form multiple coded video sequences which would have different values of
+initial_presentation_delay_minus_one if considered separately, the sample entry would
+signal the larger value.
+```
+```
+EXAMPLE 1
+The difference between initial_presentation_delay_minus_one and initial_display_delay_minus_1 can be illustrated by considering the following example:
 
+a b c d e f g h
 
+where letters correspond to frames. Assume that initial_display_delay_minus_1 is 2, i.e. that once frame c has been decoded, all other frames in the bitstream can be presented on time. If those frames were grouped into temporal units and samples as follows:
 
+[a] [b c d] [e] [f] [g] [h]
 
+initial_presentation_delay_minus_one would be 1 because it takes presentation of 2 samples to ensure that c is decoded. But if the frames were grouped as follows:
 
+[a] [b] [c] [d e f] [g] [h]
 
+initial_presentation_delay_minus_one would be 2 because it takes presentation of 3 samples to ensure that c is decoded.
+```
+The **_configOBUs_** field contains zero or more OBUs. Any OBU may be present provided that the following procedures produce compliant AV1 bitstreams:
 
+- From any sync sample, an *AV1 bitstream is formed by first outputting* the OBUs contained in the AV1CodecConfigurationBox and then by outputing all OBUs in the samples themselves, in order, starting from the sync sample.
+- From any sample marked with the *AV1ForwardKeyFrameSampleGroupEntry*, an AV1 bitstream is formed by first outputting the OBUs contained in the *AV1CodecConfigurationBox* and then by outputing all OBUs in the sample itself, then by outputting all OBUs in the samples, in order, starting from the sample at the distance indicated by the sample group.
 
+Additionally, the configOBUs field SHALL contain at most one *Sequence Header OBU* and if present, it SHALL be the first OBU.
 
+```
+NOTE: The configOBUs field is expected to contain only one *Sequence Header OBU* and zero or more *Metadata OBUs* when applicable to all the associated samples.
+```
 
+OBUs stored in the configOBUs field follow the *open_bitstream_unit Low Overhead Bitstream Format*
+syntax as specified in [AV1]. The flag *obu_has_size_field* SHALL be set to 1, indicating that the
+size of the OBU payload follows the header, and that it is coded using LEB128.
 
+When a *Sequence Header OBU* is contained within the configOBUs of the AV1CodecConfiguration-
+Record, the values present in the *Sequence Header OBU* contained within configOBUs SHALL match
+the values of the AV1CodecConfigurationRecord.
 
+The presentation times of AV1 samples are given by the ISOBMFF structures. The *timing_info_present_
+flag* in the *Sequence Header OBU* (in the configOBUs field or in the associated samples)
+SHOULD be set to 0. If set to 1, the *timing_info* structure of the *Sequence Header OBU*, the *frame_presentation_
+time* and *buffer_removal_time* fields of the *Frame Header OBUs*, if present, SHALL be
+ignored for the purpose of timed processing of the ISOBMFF file.
 
+The sample entry SHOULD contain a *‘colr’* box with a colour_type set to *‘nclx’*. If present, the values
+of colour_primaries, transfer_characteristics, and matrix_coefficients SHALL match the values given
+in the *Sequence Header* OBU (in the configOBUs field or in the associated samples) if the color_description_
+present_flag is set to 1. Similarly, the full_range_flag in the *‘colr’* box shall match the color_
+range flag in the *Sequence Header OBU8. When configOBUs does not contain a *Sequence Header
+OBU*, this box with colour_type set to *‘nclx’* SHALL be present.
 
+The CleanApertureBox *‘clap’* SHOULD not be present.
 
+For sample entries corresponding to HDR content, the MasteringDisplayColourVolumeBox *‘mdcv’*
+and ContentLightLevelBox *‘clli’* SHOULD be present, and their values SHALL match the values of
+contained in the *Metadata OBUs* of type METADATA_TYPE_HDR_CLL and METADATA_TYPE-
+_HDR_MDCV, if present (in the configOBUs or in the samples).
 
+```
+NOTE: The MasteringDisplayColourVolumeBox ‘mdcv’ and ContentLightLevelBox ‘clli’ have
+identical syntax to the SMPTE2086MasteringDisplayMetadataBox ‘SmDm’ and ContentLight-
+LevelBox ‘CoLL’, except that they are of type Box and not FullBox. However, the semantics of
+the MasteringDisplayColourVolumeBox and SMPTE2086MasteringDisplayMetadataBox have important
+differences and should not be confused.
+```
 
+Additional boxes may be provided at the end of the *VisualSampleEntry* as permitted by ISOBMFF,
+that may represent redundant or similar information to the one provided in some OBUs contained in
+the *AV1CodecConfigurationBox*. If the box definition does not indicate that its information overrides
+the OBU information, in case of conflict, the OBU information should be considered authoritative.
 
+## AV1 Sample Format
+
+For tracks using the *AV1SampleEntry*, an **_AV1 Sample_** has the following constraints:
+
+- the sample data SHALL be a sequence of *OBUs* forming a *Temporal Unit*,
+- each OBU SHALL follow the *open_bitstream_unit Low Overhead Bitstream Format* syntax as
+specified in [AV1]. Each OBU SHALL have the *obu_has_size_field* set to 1 except for the last
+OBU in the sample, for which obu_has_size_field MAY be set to 0, in which case it is assumed to
+fill the remainder of the sample,
+
+```
+NOTE: When extracting OBUs from an ISOBMFF file, and depending on the capabilities of the
+decoder processing these OBUs, ISOBMFF parsers MAY need to either: set the obu_has_size_-
+field to 1 for some OBUs if not already set, add the size field in this case, and add Temporal Delimiter
+OBU; or use the length-delimited bitstream format as defined in Annex B of AV1. If encryption
+is used, similar operations MAY have to be done before or after decryption depending on
+the demuxer/decryptor/decoder architecture.
+```
 
 
 
