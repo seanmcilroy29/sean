@@ -514,7 +514,7 @@ Note, this is an informative note.
 
 # Terms defined by reference
 
-[AV1] defines the following terms:\
+**[AV1] defines the following terms:**\
 av1 bitstream\
 buffer_removal_time\
 delayed random access point\
@@ -552,17 +552,17 @@ tile list obu\
 timing_info\
 timing_info_present_flag
 
-[CENC] defines the following terms:\
+**[CENC] defines the following terms:**\
 bytesofcleardata\
 bytesofprotecteddata\
 cbcs\
 cenc
 
-[CMAF] defines the following terms\
+**[CMAF] defines the following terms**\
 cmaf video track\
 cmf
 
-[ISOBMFF] defines the following terms:\
+**[ISOBMFF] defines the following terms:**\
 bitr\
 clap\
 clli\
@@ -573,10 +573,10 @@ mdcv\
 nclx\
 visualsampleentry
 
-[RFC6381] defines the following terms:\
+**[RFC6381] defines the following terms:**\
 codecs
 
-[vp9] defines the following terms:\
+**[vp9] defines the following terms:**\
 coll\
 smdm
 
