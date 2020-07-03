@@ -562,7 +562,7 @@ cenc
 cmaf video track
 cmf
 
-[ISOBMFF] defines the following terms:
+[ISOBMFF] defines the following terms:\
 bitr
 clap
 clli
