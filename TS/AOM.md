@@ -389,7 +389,7 @@ class AV1SwitchFrameSampleGroupEntry extends VisualSampleGroupEntry('av1s')
 }
 ```
 
-## V1 Metadata sample group entry
+## AV1 Metadata sample group entry
 
 ### Definition
 
