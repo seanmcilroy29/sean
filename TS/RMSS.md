@@ -8,8 +8,8 @@ https://aomediacodec.github.io/av1-isobmff/
 **Issue Tracking:**
 GitHub
 
-**Editors:**
-Cyril Concolato (Netflix)
+**Editors:**\
+Cyril Concolato (Netflix)\
 Tom Finegan (Google)
 
 Copyright 2018, The Alliance for Open Media
