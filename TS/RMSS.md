@@ -275,6 +275,186 @@ is used, similar operations MAY have to be done before or after decryption depen
 the demuxer/decryptor/decoder architecture.
 ```
 
+- OBU trailing bits SHOULD be limited to byte alignment and SHOULD not be used for padding,
+- OBUs of type OBU_TEMPORAL_DELIMITER, OBU_PADDING, or OBU_REDUNDAN-T_FRAME_HEADER SHOULD NOT be used.
+- OBUs of type OBU_TILE_LIST SHALL NOT be used.
+
+If an AV1 Sample is signaled as a sync sample (in the SyncSampleBox or by setting sample_is_non_-sync_sample to 0), it SHALL be a Random Access Point as defined in [AV1], i.e. satisfy the followingconstraints:
+
+- Its first frame is a *Key Frame* that has *show_frame8 flag set to 1,
+- It contains a *Sequence Header OBU* before the first *Frame Header OBU*.
+
+```
+NOTE: Within this definition, a sync sample may contain additional frames that are not KeyFrames. The fact that none of them is the first frame in the temporal unit ensures that they aredecodable.
+```
+
+```
+NOTE: Other types of OBUs such as *metadata OBUs* could be present before the *Sequence Header OBU*.
+```
+
+*Intra-only frames* SHOULD be signaled using the sample_depends_on flag set to 2.
+
+*Delayed Random Access Points* SHOULD be signaled using sample groups and the *AV1ForwardKey-FrameSampleGroupEntry*.
+
+*Switch Frames* SHOULD be signaled using sample groups and the *AV1SwitchFrameSampleGroupEn-try*.
+
+Additionally, if a file contains multiple tracks that are alternative representations of the same content,in particular using *Switch Frames*, those tracks SHOULD be marked as belonging to the same alter-nate group and should use a track selection box with an appropriate attribute (e.g. *‘bitr’*).
+
+In tracks using the *AV1SampleEntry*, the ‘ctts’ box and composition offsets in movie fragmentsSHALL NOT be used. Similarly, the is_leading flag, if used, SHALL be set to 0 or 2.
+
+When a temporal unit contains more than one frame, the sample corresponding to that temporal unitMAY be marked using the *AV1MultiFrameSampleGroupEntry*.
+
+*Metadata OBUs* may be carried in sample data. In this case, the *AV1MetadataSampleGroupEntry* SHOULD be used. If the *metadata OBUs* are static for the entire set of samples associated with a giv-en sample description entry, they SHOULD also be in the OBU array in the sample description entry.
+
+Unless explicitely stated, the grouping_type_parameter is not defined for the SampleToGroupBox withgrouping types defined in this specification.
+
+## AV1 Forward Key Frame sample group entry
+
+### Definition
+
+```
+Group Type: av1f
+Container:  Sample Group Description Box ('sgpd')
+Mandatory:  No
+Quantity:   Zero or more.
+```
+
+#### Description
+
+The **_AV1ForwardKeyFrameSampleGroupEntry_** documents samples that contain a *Delayed Random Access Point* that are followed at a given distance in the bitstream by a *Key Frame Dependent Recov-ery Point*.
+
+### Syntax
+```
+class AV1ForwardKeyFrameSampleGroupEntry extends VisualSampleGroupEntry('av1  
+unsigned int(8) fwd_distance;
+}
+```
+### Semantics
+
+The **_fwd_distance_** field indicates the number of samples between this sample and the next sample con-taining the associated *Key Frame Dependent Recovery Point*. 0 means the next sample.
+
+## AV1 Multi-Frame sample group entry
+
+### Definition
+```
+Group Type: av1m
+Container:  Sample Group Description Box ('sgpd')
+Mandatory:  NoQuantity:   
+Zero or more.
+```
+
+### Description
+
+The **_AV1MultiFrameSampleGroupEntry_** documents samples that contain multiple frames.
+
+### Syntax
+
+```
+class AV1MultiFrameSampleGroupEntry extends VisualSampleGroupEntry('av1m') {
+}
+```
+
+## AV1 Switch Frame sample group entry
+
+### Definition
+
+```
+Group Type: av1s
+Container:  Sample Group Description Box ('sgpd')
+Mandatory:  NoQuantity:   
+Zero or more
+```
+
+### Description
+
+The **_AV1SwitchFrameSampleGroupEntry_** documents samples that start with a *Switch Frame*.
+
+### Syntax
+
+```
+class AV1SwitchFrameSampleGroupEntry extends VisualSampleGroupEntry('av1s') 
+}
+```
+
+### Description
+
+The AV1MetadataSampleGroupEntry documents samples that contain *metadata OBUs*. Thegrouping_type_parameter can be used to identify samples containing *metadata OBUs* of a giventype. If no grouping_type_parameter is provided, the sample group entry identifies samples con-taining *metadata OBUs* for which the metadata_type is unknown.
+
+ ### Syntax
+```
+class AV1MetadataSampleGroupEntry extends VisualSampleGroupEntry('av1M') {
+}
+```
+For this sample group entry, the grouping_type_parameter syntax is as follows
+```
+{   
+   unsigned int (8) metadata_type;   
+   unsigned int (24) metadata_specific_parameters;
+}
+```
+
+### Semantics
+
+**_metadata_type_** is a 8-bit field whose value is the value of the metadata_type field defined in [AV1],when it is equal or lower than 255. metadata_type values above 255 are not supported by this samplegroup.
+
+**_metadata_specific_parameters provides_** an additional part of the grouping_type_parameter,which MAY be used to distinguish different sample groups having the same metadata_type but dif-ferent sub-parameters. In this version of the specification, metadata_specific_parameters is only defined when metadata_type is set to METADATA_TYPE_ITUT_T35 in which case its value SHALL be set to the first 24 bits of the metadata_itut_t35 structure. For other types of metadata,its value SHOULD be set to 0. In all cases, when the grouping_type_parameter is used, readers processing sample groups SHALL use the entire value of grouping_type_parameter.
+
+# CMAF AV1 track format
+
+[CMAF] defines structural constraints on ISOBMFF files additional to [ISOBMFF] for the purpose of,for example, adaptive streaming or for protected files. Conformance to these structural constraints issignaled by the presence of the brand cmfc in the FileTypeBox.
+
+If a CMAF Video Track uses the brand av01, it is called a CMAF AV1 Track and the following con-straints, defining the CMAF Media Profile for AV1, apply:
+
+- it SHALL use an *AV1SampleEntry*
+- it MAY use multiple sample entries, and in that case the following values SHALL not change inthe track:
+  - seq_profile
+  - still_picture
+  - the first value of seq_level_idx
+  - the first value of seq_tier
+  - color_config
+  - initial_presentation_delay_minus_one
+
+When protected, *CMAF AV1 Tracks* SHALL use the signaling defined in [CMAF], which in turn re-lies on [CENC], with the provisions specified in *§4 Common Encryption*.
+
+# Common Encryption
+
+*CMAF AV1 Tracks* and non-segmented AV1 files MAY be protected. If protected, they SHALL con-form to [CENC]. Only the *cenc* and *cbcs* protection schemes are supported.
+
+When the protected scheme *cenc* is used, samples SHALL be protected using subsample encryptionand SHALL NOT use pattern encryption.
+
+When the protected scheme *cbcs* is used, samples SHALL be protected using subsample encryption and SHALL use pattern encryption. [CENC] recommends that the Pattern Block length be 10, i.e.crypt_byte_block + skip_byte_block = 10. All combinations such that this is true SHALLbe supported, including crypt_byte_block = 10 and skip_byte_block = 0.
+
+## General Subsample Encryption constraints§
+
+Within protected samples, the following constraints apply:
+
+- Protected samples SHALL be exactly spanned by one or more contiguous subsamples.
+  - An OBU MAY be spanned by one or more subsamples, especially when it has multipleranges of protected data. However, as recommended in [CENC], writers SHOULD reducethe number of subsamples as possible. This can be achieved by using a subsample that spansmultiple consecutive unprotected OBUs as well as the first unprotected and protected partsof the following protected OBU, if such protected OBU exists.
+  - A large unprotected OBU whose data size is larger than the maximum size of a single *Bytes-Of ClearData* field MAY be spanned by multiple subsamples with zero size *BytesOfPro-tectedData*.
+
+- All *OBU Headers* and associated *obu_size* fields SHALL be unprotected.
+- *Temporal Delimiter OBUs, Sequence Header OBUs*, and *Frame Header OBUs* (including withina *Frame OBU*), *Redundant Frame Header OBUs* and *Padding OBUs* SHALL be unprotected.
+- *Metadata OBUs* MAY be protected.
+- *Tile Group OBUs* and *Frame OBUs* SHALL be protected. Within *Tile Group OBUs* or *FrameOBUs*, the following applies:
+
+  - A subsample SHALL be created for each tile.
+  - *BytesOfProtectedData* SHALL be a multiple of 16 bytes.
+  - *BytesOfProtectedData* SHALL end on the last byte of the decode_tile structure (includ-ing any trailing bits).
+  - *BytesOfProtectedData* SHALL span all complete 16-byte blocks of the decode_tile struc-ture (including any trailing bits).
+
+```
+NOTE: As a result of the above, partial blocks are not used and it is possible that BytesOfPro-tectedData does not start at the first byte of the decode_tile structure, but some number of bytes following that.
+```
+
+  - All other parts of *Tile Group OBUs* and *Frame OBUs* SHALL be unprotected.
+
+## Subsample Encryption Illustration
+
+<figure class="text-center">
+      <img src="images/The multicast key derivation scheme.svg" alt="Subsample-based AV1 encryption">
+      <figcaption>Subsample-based AV1 encryption</figcaption>
+</figure>
+
 
 
 
