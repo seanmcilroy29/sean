@@ -514,64 +514,64 @@ Note, this is an informative note.
 
 # Terms defined by reference
 
-[AV1] defines the following terms:
-av1 bitstream
-buffer_removal_time
-delayed random access point
-frame header obuframe obu
-frame_presentation_time
-initial_display_delay_minus_1
-inter frame
-intra-only frame
-key frame
-key frame dependent recovery point
-low overhead bitstream format
-max_frame_height_minus_1
-max_frame_width_minus_1
-metadata obu
-mono_chrome
-obu
-obu header
-obu_has_size_field
-obu_sizeopen_bitstream_unit
-padding obu
-random access point
-redundant frame header obu 
-seq_level_idx
-seq_tier
-sequence header obu
-show_existing_frame
-show_frame
-subsampling_x
-subsampling_y
+[AV1] defines the following terms:\
+av1 bitstream\
+buffer_removal_time\
+delayed random access point\
+frame header obuframe obu\
+frame_presentation_time\
+initial_display_delay_minus_1\
+inter frame\
+intra-only frame\
+key frame\
+key frame dependent recovery point\
+low overhead bitstream format\
+max_frame_height_minus_1\
+max_frame_width_minus_1\
+metadata obu\
+mono_chrome\
+obu\
+obu header\
+obu_has_size_field\
+obu_sizeopen_bitstream_unit\
+padding obu\
+random access point\
+redundant frame header obu\
+seq_level_idx\
+seq_tier\
+sequence header obu\
+show_existing_frame\
+show_frame\
+subsampling_x\
+subsampling_y\
 switch frame
-temporal delimiter obu
-temporal uni
-tile group obu
-tile list obu
-timing_info
-timing_info_present_flag
+temporal delimiter obu\
+temporal uni\
+tile group obu\
+tile list obu\
+timing_info\
+timing_info_present_flag\
 
-[CENC] defines the following terms:
-bytesofcleardata
-bytesofprotecteddata
-cbcs
-cenc
+[CENC] defines the following terms:\
+bytesofcleardata\
+bytesofprotecteddata\
+cbcs\
+cenc\
 
-[CMAF] defines the following terms
-cmaf video track
-cmf
+[CMAF] defines the following terms\
+cmaf video track\
+cmf\
 
 [ISOBMFF] defines the following terms:\
-bitr
-clap
-clli
-colr
-ctts
-iso6
-mdcv
-nclx
-visualsampleentry
+bitr\
+clap\
+clli\
+colr\
+ctts\
+iso6\
+mdcv\
+nclx\
+visualsampleentry\
 
 [RFC6381] defines the following terms:
 codecs
