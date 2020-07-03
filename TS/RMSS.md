@@ -455,763 +455,140 @@ NOTE: As a result of the above, partial blocks are not used and it is possible t
       <figcaption>Subsample-based AV1 encryption</figcaption>
 </figure>
 
+# Codecs Parameter String
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### PackageVersionReq & Ans
-
-The **_PackageVersionReq** command has no payload.
-The end-device answers with a **_PackageVersionAns_** command with the following payload.
-
-<table>
-    <caption>PackageVersionAns</caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size(bytes)</th>
-        </tr>
-        <tr>
-            <td>PackageIdentifier</td>
-            <td>1</td>
-        </tr>
-	<tr>
-            <td>PackageVersion</td>
-            <td>1</td>
-        </tr>
-    </tbody>
-</table>
-
-*PackageIdentifier uniquely* identifies the package. For the “multicast control package” this identifier is 2.
-
-*PackageVersion* corresponds to the version of the package specification implemented by the end-device. 
-
-### McGroupStatusReq & Ans
-
-The McGroupStatusReq command has a single byte payload.
-
-<table>
-    <caption>McGroupStatusReq </caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size(bytes)</th>
-        </tr>
-        <tr>
-            <td>CmdMask</td>
-            <td>1</td>
-        </tr>
-    </tbody>
-</table>
-
-Where:
-
-<table>
-    <caption>McGroupStatusReq CmdMask field</caption>
-    <thead>
-        <tr>
-            <th>CmdMask Fields</th>
-            <th>Size(bits)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>4 bits</td>
-        </tr>
-	 <tr>
-            <td>ReqGroupMask</td>
-            <td>4 bits</td>
-        </tr>
-    </tbody>
-</table>
-
-The *ReqGroupMask* bit mask defines the multicast groups whose status should be reported by the end-device.  ReqGroupMask[n] = 1 means that the nth multicast group status SHOULD be included in the answer. ReqGroupMask[n] = 0 means that this group SHALL NOT be included in the answer.
-
-The end-device responds to the McGroupStatusReq command with a McGroupStatusAns with the following payload:
-
-<table>
-    <caption> McGroupStatusAns</caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size(bytes)</th>
-        </tr>
-        <tr>
-            <td>status</td>
-            <td>1</td>
-        </tr>
-	 <tr>
-            <td>Optional list of [McGroupID+McAddr]</td>
-            <td>5xNbItems</td>
-        </tr>
-    </tbody>
-</table>
-
-The status field encodes the following information:
-
-<table>
-    <caption>McGroupStatusAns Status field</caption>
-    <thead>
-        <tr>
-            <th>Status Fields</th>
-            <th>Size(bits)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>1 bit</td>
-        </tr>
-	 <tr>
-            <td>NbTotalGroups</td>
-            <td>3bits</td>
-        </tr>
-	 <tr>
-            <td>AnsGroupMask</td>
-            <td>4bits</td>
-        </tr>
-    </tbody>
-</table>
-
-*AnsGroupMask* is a bit mask describing which groups are listed in the report. If the end-device cannot report the status of the multicast groups specified by the *ReqGroupMask* field of the request, the end-device SHALL discard the nth last groups (starting with the highest GroupID) until the answer fits. In that case, the *AnsGroupMask* mask is different from the *ReqGroupMask*. In that case the server can get the status of the groups not listed by issuing a new McGroupStatusReq command with another *RegGroupMask* field.  If all groups requested can be listed, *AnsGroupMask8* == *ReqGroupMask*.
-
-*NbTotalGroups* is the number of multicast groups currently defined in the end-device. The valid range is [0:4].
-
-Each record consists of 5 bytes [McGroupID + McAddr].
-McGroupID and McAddr are provided to the end-device by McGroupSetupReq.
-
-### McGroupSetupReq & Ans
-
-This command is used to create or modify the parameters of a multicast group.
-The payload of the message is:
-
-<table>
-    <caption>McGroupSetupReq</caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size(bytes)</th>
-        </tr>
-        <tr>
-            <td>McGroupIDHeader</td>
-            <td>1</td>
-        </tr>
-	 <tr>
-            <td>McAddr</td>
-            <td>4</td>
-        </tr>
-	 <tr>
-            <td>McKey_encrypted</td>
-            <td>16</td>
-        </tr>
-	  <tr>
-            <td>minMcFCount</td>
-            <td>4</td>
-        </tr>
-	 <tr>
-            <td>maxMcFCount</td>
-            <td>4</td>
-        </tr>
-    </tbody>
-</table>
-
-Where:
-
-<table>
-    <caption>McGroupSetupReq McGroupIDHeader field</caption>
-    <thead>
-        <tr>
-            <th>McGroupIDHeader Fields</th>
-            <th>Size(bits)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>6 bits</td>
-        </tr>
-	 <tr>
-            <td>McGroupID</td>
-            <td>2 bits</td>
-        </tr>
-    </tbody>
-</table>
-
-*McGroupID* is the multicast group ID of the multicast context. An end-device MAY support being part of several multicast group simultaneously. Therefore, all multicast related command MUST always contain an identifier (the McGroupID) of the multicast group being affected. 
-
+DASH and other applications require defined values for the *‘Codecs’* parameter specified in[RFC6381] for ISO Media tracks. The codecs parameter string for the AOM AV1 codec is as follows:
 ```
-Note: The McAddr could be used as a multicast group identifier but this would add a systematic 4
-bytes overhead, so a more compact McGroupID is used. Additionally, if MultiCast keys are kept in a
-Hardware Secure Element that can only keep a few keys, the MCU needs to indicate which key memory
-slot should be used. Therefore, the Multicast group ID concept is required.
-```
-An end-device implementing this package SHALL support at least one multicast group. An end-device MAY support up to a maximum of 4 simultaneous multicast contexts.
-
-*McKey_encrypted* is the encrypted multicast group key from which McAppSKey and McNetSKey will be derived. The McKey_encrypted key can be decrypted using the following operation to give the multicast group’s McKey.
-	McKey = aes128_encrypt(McKEKey, McKey_encrypted)
-
-The McKEKey is a __**lifetime end-device specific**__ key used to encrypt Multicast key transported over the air (it is a Key Encryption Key), and may be either:
-
-* Derived from a new root key (GenAppKey) provisioned in the end-device at any time before the deployment of the end-device in the field. LoRaWAN 1.0.x end-devices SHALL use this scheme. 
-  * McRootKey = aes128_encrypt(GenAppKey, 0x00 | pad16)
-  * McKEKey = aes128_encrypt(McRootKey, 0x00 | pad16)
-
-* Derived from the AppKey.  LoRaWAN 1.1+ end-devices SHALL use this scheme.
-  * McRootKey = aes128_encrypt(AppKey, 0x20 | pad16)
-  * McKEKey = aes128_encrypt(McRootKey, 0x00 | pad16)
-  
-The McAppSKey and the McNetSKey are then derived from the group’s McKey as follow:
-
-McAppSKey = aes128_encrypt(McKey, 0x01 | McAddr | pad16)
-McNetSKey = aes128_encrypt(McKey, 0x02 | McAddr | pad16)
-
-The multicast key derivation scheme is summarized in the following diagram.
-
-<figure class="text-center">
-      <img src="images/The multicast key derivation scheme.svg" alt="The multicast key derivation scheme">
-      <figcaption>The multicast key derivation scheme</figcaption>
-</figure>
-
-```
-Note: using a Key Encryption Key to transport the multicast group McKey allows for a completely
-secure multicast scheme when using a hardware secure element, when the secure element does not export
-the McKey, McAppSKey, and McNwkSKey to the outside. It does not increase the security if a full
-software implementation is used in the end-device. However, for compatibility reason it is
-recommended to systematically use this scheme.
+<sample entry 4CC>.<profile>.<level><tier>.<bitDepth>.<monochrome>.<chromaSu<colorPrimaries>.<transferCharacteristics>.<matrixCoefficients>.<videoFullRa
 ```
 
-The *minMcFCount* field is the next frame counter value of the multicast downlink to be sent by the server for this group. This information is required in case an end-device is added to a group that already exists. The end-device MUST reject any downlink multicast frame using this group multicast address if the frame counter is < minMcFCount. 
+All fields following the sample entry 4CC are expressed as double digit decimals, unless indicated oth-erwise. Leading or trailing zeros cannot be omitted.
 
-*McAddr* is the multicast group network address. McAddr is negotiated off-band by the application server with the network server.
+The profile parameter value, represented by a single digit decimal, SHALL equal the value of seq_pro-file in the *Sequence Header OBU*.
 
-*maxMcFCount* specifies the life time of this multicast group expressed as a maximum number of frames. The end-device will only accept a multicast downlink frame if the 32bits frame counter value minMcFCount ≤ McFCount < maxMcFCount.
+The level parameter value SHALL equal the first level value indicated by *seq_level_idx* in the *Se-quence Header OBU*.
 
-The end-device acknowledges the reception of this message by sending an **_McGroupSetupAns_** message with the following payload:
+The tier parameter value SHALL be equal to M when the first *seq_tier* value in the *Sequence Header OBU* is equal to 0, and H when it is equal to 1.
 
-<table>
-    <caption>McGroupSetupAns</caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size (bytes)</th>
-        </tr>
-	<tr>
-            <td>McGroupIDHeader</td>
-            <td>1</td>
-        </tr>
-    </tbody>
-</table>
+The bitDepth parameter value SHALL equal the value of BitDepth variable as defined in [AV1] de-rived from the Sequence Header OBU.The monochrome parameter value, represented by a single digit decimal, SHALL equal the value ofmono_chrome in the *Sequence Header OBU*.
 
-Where:
+The chromaSubsampling parameter value, represented by a three-digit decimal, SHALL have its firstdigit equal to subsampling_x and its second digit equal to subsampling_y. If both subsampling_x andsubsampling_y are set to 1, then the third digit SHALL be equal to chroma_sample_position, other-wise it SHALL be set to 0.
 
-<table>
-    <caption>McGroupSetupAns McGroupIDHeader field</caption>
-    <thead>
-        <tr>
-            <th>McGroupIDHeader Fields</th>
-            <th>Size (bytes)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>5</td>
-        </tr>
-	 <tr>
-            <td>IDerror</td>
-            <td>1</td>
-        </tr>
-	 <tr>
-            <td>McGroupID</td>
-            <td>2</td>
-        </tr>
-    </tbody>
-</table>
+The colorPrimaries, transferCharacteristics, matrixCoefficients, and videoFullRangeFlag parametervalues SHALL equal the value of matching fields in the *Sequence Header OBU*, if color_descrip-tion_present_flag is set to 1, otherwise they SHOULD not be set, defaulting to the values below. ThevideoFullRangeFlag is represented by a single digit.
 
-When set the *IDerror* bit indicates that the end-device does not support the multicast context indexed by the McGroupID requested by the server. For example, an end-device MAY only support a single multicast group (McGroupID=0). If the server tries to create a second multicast group with McGroupID = 1, the end-device SHALL respond with IDerror=1.
+For example, codecs="av01.0.04M.10.0.112.09.16.09.0" represents AV1 Main Profile, level 3.0, Maintier, 10-bit content, non-monochrome, with 4:2:0 chroma subsampling co-located with (0, 0) lumasample, ITU-R BT.2100 color primaries, ITU-R BT.2100 PQ transfer characteristics, ITU-R BT.2100YCbCr color matrix, and studio swing representation.
 
-### McGroupDeleteReq & Ans
+The parameters sample entry 4CC, profile, level, tier, and bitDepth are all mandatory fields. If any ofthese fields are empty, or not within their allowed range, the processing device SHOULD treat it as an error.
 
-This message is used to delete a multicast group from an end-device. The command payload is:
-
-<table>
-    <caption>McGroupDeleteReq</caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size (bytes)</th>
-        </tr>
-        <tr>
-            <td>McGroupIDHeader</td>
-            <td>1</td>
-        </tr>
-    </tbody>
-</table>
-
-Where:
-
-<table>
-    <caption>McGroupDeleteReq McGroupIDHeader field</caption>
-    <thead>
-        <tr>
-            <th>McGroupIDHeader Fields</th>
-            <th>Size (bits)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>6bits</td>
-        </tr>
-	<tr>
-            <td>McGroupID</td>
-            <td>2bits</td>
-        </tr>
-    </tbody>
-</table>
-
-The end-device answers with **McGroupDeleteAns** with payload:
-
-<table>
-    <caption>McGroupDeleteAns</caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size (bytes)</th>
-        </tr>
-        <tr>
-            <td>McGroupIDHeader</td>
-            <td>1</td>
-        </tr>
-    </tbody>
-</table>
-
-Where:
-
-<table>
-    <caption>McGroupDeleteAns McGroupIDHeader field</caption>
-    <thead>
-        <tr>
-            <th>McGroupIDHeader Fields</th>
-            <th>Size (bits)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>5bits</td>
-        </tr>
-	<tr>
-            <td>MCGroupUndefined</td>
-            <td>1bit</td>
-        </tr>
-	 <tr>
-            <td>McGroupID</td>
-            <td>2bits</td>
-        </tr>
-    </tbody>
-</table>
-
-*MCGroupUndefined* is set 1 if the McGroupID specified by the command is not defined in the end-device (was not created before calling the delete command).
-
-### McClassCSessionReq & Ans
-
-This message is only used to setup a temporary classC multicast session associated with a multicast context. 
-
-The payload of the message is:
-
-<table>
-    <caption>McClassCSessionReq</caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size (bytes)</th>
-        </tr>
-        <tr>
-            <td>McGroupIDHeader</td>
-            <td>1</td>
-        </tr>
-	<tr>
-            <td>Session Time</td>
-            <td>4</td>
-        </tr>
-	 <tr>
-            <td>SessionTimeOut</td>
-            <td>1</td>
-        </tr>
-	 <tr>
-            <td>DLFrequ</td>
-            <td>3</td>
-        </tr>
-	 <tr>
-            <td>DR</td>
-            <td>1</td>
-        </tr>
-    </tbody>
-</table>
-
-Where:
-
-<table>
-    <caption>McClassCSessionReq McGroupIDHeader field</caption>
-    <thead>
-        <tr>
-            <th>McGroupIDHeader Fields</th>
-            <th>Size (bits)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>6bits</td>
-        </tr>
-	<tr>
-            <td>McGroupID</td>
-            <td>2bits</td>
-        </tr>
-    </tbody>
-</table>
-
-And where:
-
-<table>
-    <caption>McClassCSessionReq SessionTimeOut field</caption>
-    <thead>
-        <tr>
-            <th>SessionTimeOut Fields</th>
-            <th>Size (bits)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>4bits</td>
-        </tr>
-	<tr>
-            <td>TimeOut</td>
-            <td>4bits</td>
-        </tr>
-    </tbody>
-</table>
-
-*McGroupID* is the identifier of the multicast group being used.
-
-*SessionTime* is the start of the Class C window, and is expressed as the time in seconds since 00:00:00, Sunday 6th of January 1980 (start of the GPS epoch) modulo 2^32. Note that this is the same format as the Time field in the beacon frame.
-
-*TimeOut* encodes the maximum length in seconds of the multicast session (max time the end-device stays in classC before reverting to class A to save battery)
-The maximum duration in second is 2TimeOut (Example: TimeOut=8 means 256 seconds)
-This is a maximum duration because the end-device’s application might decide to revert to class A before the end of the session, this decision is application specific. 
+All the other fields (including their leading '.') are optional, mutually inclusive (all or none) fields. Ifnot specified then the values listed in the table below are assumed
 
 ```
-For example, the multicast session might be used to broadcast a firmware upgrade file. In that case
-the end-device might end the multicast session has soon as the full file is received without waiting
-for TimeOut.
+mono_chrome                0
+chromaSubsampling          110 (4:2:0)
+colorPrimaries             1 (ITU-R BT.709)
+transferCharacteristics    1 (ITU-R BT.709)
+matrixCoefficients         1 (ITU-R BT.709)
+videoFullRangeFlag         0 (studio swing representation)
 ```
+The string codecs="av01.0.01M.08" in this case would represent AV1 Main Profile, level 2.1, Main tier, 8-bit content with 4:2:0 chroma subsampling, ITU-R BT.709 color primaries, transfer characteris-tics, matrix coefficients, and studio swing representation. 
 
-*DlFrequ:* Encodes the frequency used for the multicast. This field is a 24 bits unsigned integer. The actual channel frequency in Hz is 100 x DlFrequ whereby values representing frequencies below 100 MHz are reserved for future use. This allows setting the frequency of a channel anywhere between 100 MHz to 1.67 GHz in 100 Hz steps.
-This field has the same meaning and coding as LoRaWAN *NewChannelReq* MAC command ‘Freq’ field.
+If any character that is not '.', digits, part of the AV1 4CC, or a tier value is encountered, the string SHALL be interpreted ignoring all the characters starting from that character.
 
-*DR:* index of the data rate used for the multicast. Uses the same look-up table than the one used by the LinkAdrReq MAC command of the LoRaWAN protocol.
+# Conformance
 
-The end-device acknowledges the reception of this message by sending a **McClassCSessionAns** message on the same port with the following payload:
+Conformance requirements are expressed with a combination of descriptive assertions and RFC 2119 terminology. The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”,“SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in the normativeparts of this document are to be interpreted as described in RFC 2119. However, for readability, thesewords do not appear in all uppercase letters in this specification.
 
-<table>
-    <caption>McClassCSessionAns</caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size (bytes)</th>
-        </tr>
-        <tr>
-            <td>Status&McGroupID</td>
-            <td>1</td>
-        </tr>
-	<tr>
-            <td>(cond)TimeToStart</td>
-            <td>3</td>
-        </tr>
-    </tbody>
-</table>
+All of the text of this specification is normative except sections explicitly marked as non-normative,examples, and notes. [RFC2119]
 
-Where:
-
-<table>
-    <caption>McClassCSessionAns Status&McGroupID field</caption>
-    <thead>
-        <tr>
-            <th>Status&McGroupID Fields</th>
-            <th>Size (bits)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>3bits</td>
-        </tr>
-	<tr>
-            <td>McGroupUndefined</td>
-            <td>1bit</td>
-        </tr>	
-	<tr>
-            <td>FreqError</td>
-            <td>1bit</td>
-        </tr>	
-	 <tr>
-            <td>DRError</td>
-            <td>1bit</td>
-        </tr>	
-	 <tr>
-            <td>McGroupID</td>
-            <td>1bit</td>
-        </tr>
-    </tbody>
-</table>
-
-*FreqError* bit is set to 1 if the DLFrequ frequency set by the network is not usable for the end-device.
-
-*DRError* bit is set to 1 if the classC downlink Data Rate set by the network is not defined.
-
-*McGroupUndefined* is set 1 if the McGroupID specified by the command is not defined in the end-device (was not created before calling this command).
-
-If no errors are present, the *TimeToStart* field encodes the number of seconds from the **_McClassCSessionAns_** uplink to the beginning of the multicast session. This allows the server to check that the end-device clock is well synchronized and that the end-device will effectively switch to classC exactly at the right moment (with second accuracy). This is possible because all uplinks are accurately time stamped by the network gateways (at least with an accuracy better than the second).
-
-### McClassBSessionReq & Ans
-
-This message is only used to setup a temporary ClassB multicast session associated with a multicast context. 
-The payload of the message is:
-
-<table>
-    <caption>McClassBSessionReq</caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size (bytes)</th>
-        </tr>
-	<tr>
-            <td>McGroupIDHeader</td>
-            <td>1</td>
-        </tr>	
-	<tr>
-            <td>Session Time</td>
-            <td>4</td>
-        </tr>	
-	 <tr>
-            <td>TimeOutPeriodicity</td>
-            <td>1</td>
-        </tr>	
-	 <tr>
-            <td>DLFrequ</td>
-            <td>3</td>
-        </tr>
-	<tr>
-            <td>DR</td>
-            <td>1</td>
-        </tr>
-    </tbody>
-</table>
-
-Where:
-
-<table>
-    <caption>McClassBSessionReq McGroupIDHeader field</caption>
-    <thead>
-        <tr>
-            <th>McGroupIDHeader Fields</th>
-            <th>Size (bits)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>6bits</td>
-        </tr>
-	<tr>
-            <td>McGroupID</td>
-            <td>2bits</td>
-        </tr>	
-    </tbody>
-</table>
-
-And where:
-
-<table>
-    <caption>McClassBSessionReq TimeOutPeriodicity field</caption>
-    <thead>
-        <tr>
-            <th>TimeOutPeriodicity Fields</th>
-            <th>Size (bits)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>1bits</td>
-        </tr>
-	<tr>
-            <td>Periodicity</td>
-            <td>3bits</td>
-        </tr>
-	<tr>
-            <td>TimeOut</td>
-            <td>4bits</td>
-        </tr>
-    </tbody>
-</table>
-
-*McGroupID* is the identifier of the multicast group being used.
-
-*SessionTime* is the start of the Class B window, and is expressed as the time in seconds since 00:00:00, Sunday 6th of January 1980 (start of the GPS epoch) modulo 2^32. Note that this is the same format as the Time field in the beacon frame. SessionTime MUST be an integer multiple of 128.
-
-*TimeOut* encodes the maximum length in BeaconPeriods (128seconds) of the multicast fragmentation session (max time the end-device stays in classB before eventually reverting to class A to save battery)
-The maximum duration in second is 128*2TimeOut (Example: TimeOut=8 corresponds roughly to 9.1hours).
+Examples in this specification are introduced with the words “for example” or are set apart from thenormative text with class="example", like this
 
 ```
-Attention: For classB TimeOut is expressed in BeaconPeriod (128sec), whereas it is expressed in 
-seconds for classC. This is because a classB multicast session is heavily duty-cycled and is likely
-to last a lot longer than a classC session.
+This is an example of an informative example
 ```
-This is a maximum duration because the end-device’s application might decide to revert to class A before the end of the session, this decision is application specific. 
 
-*Periodicity* encodes the classB ping slot periodicity for the multicast group. The encoding format is the same than for the Periodicity field of the **_PingSlotInfoReq_** classB MAC command defined in LoRaWAN.
-
-*DlFrequ*: Encodes the frequency used for the multicast. This field is a 24 bits unsigned integer. The actual channel frequency in Hz is 100 x DlFrequ whereby values representing frequencies below 100 MHz are reserved for future use. This allows setting the frequency of a channel anywhere between 100 MHz to 1.67 GHz in 100 Hz steps. 
-This field has the same meaning and coding as LoRaWAN *NewChannelReq* MAC command 'Freq' field.
-
-In regions where the classB beacon is transmitted following a frequency hopping pattern, DlFrequ=0 signals the end-device to use the default classB default frequency hopping scheme. That scheme is defined in the classB section of the LoRaWAN specification. In that case, Class B downlinks use a channel which is a function of the Time field of the last beacon (see Beacon Frame content) and the multicast address McAddr.
+Informative notes begin with the word “Note” and are set apart from the normative text withclass="note", like this:
 
 ```
-Class B downlink channel=[McAddr+floor ((Beacon_Time )/(Beacon_period))] modulo NbChannel
+Note, this is an informative note.
 ```
-* Whereby Beacon_Time is the 32-bit Time field of the current beacon period
-* Beacon_period is the length of the beacon period (defined as 128sec in the specification)
-* Floor designates rounding to the immediately lower integer value
-* McAddr is the 32-bit network address of the multicast group
-* NbChannel is the number of channel over which the beacon is frequency hopping
- 
-*DR*: index of the data rate used for the classB multicast. Uses the same look-up table than the one used by the LinkAdrReq MAC command of the LoRaWAN protocol.
 
-The end-device acknowledges the reception of this message by sending a **_McClassBSessionAns** message on the same port with the following payload:
+# Terms defined by reference
 
-<table>
-    <caption>McClassBSessionAns</caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size (bytes)</th>
-        </tr>
-        <tr>
-            <td>Status&McGroupID</td>
-            <td>1</td>
-        </tr>
-	<tr>
-            <td>(cond)TimeToStart</td>
-            <td>3</td>
-        </tr>
-    </tbody>
-</table>
+[AV1] defines the following terms
+av1 bitstream
+buffer_removal_time
+delayed random access point
+frame header obuframe obu
+frame_presentation_time
+initial_display_delay_minus_1
+inter frame
+intra-only frame
+key frame
+key frame dependent recovery point
+low overhead bitstream format
+max_frame_height_minus_1
+max_frame_width_minus_1
+metadata obu
+mono_chrome
+obu
+obu header
+obu_has_size_field
+obu_sizeopen_bitstream_unit
+padding obu
+random access point
+redundant frame header obu 
+seq_level_idx
+seq_tier
+sequence header obu
+show_existing_frame
+show_frame
+subsampling_x
+subsampling_y
+switch frame
+temporal delimiter obu
+temporal uni
+tile group obu
+tile list obu
+timing_info
+timing_info_present_flag
 
-Where:
+[CENC] defines the following terms:
+bytesofcleardata
+bytesofprotecteddata
+cbcs
+cenc
 
-<table>
-    <caption>McClassBSessionAns Status&McGroupID field</caption>
-    <thead>
-        <tr>
-            <th>Field</th>
-            <th>Size (bits)</th>
-        </tr>
-        <tr>
-            <td>RFU</td>
-            <td>3bits</td>
-        </tr>
-	<tr>
-            <td>McGroupUndefined</td>
-            <td>1bit</td>
-        </tr>
-	<tr>
-            <td>FreqError</td>
-            <td>1bit</td>
-        </tr>
-	<tr>
-            <td>DRError</td>
-            <td>1bit</td>
-        </tr>
-	<tr>
-            <td>McGroupID</td>
-            <td>2bit</td>
-        </tr>
-    </tbody>
-</table>
+[CMAF] defines the following terms
+cmaf video track
+cmf
 
-*FreqError* bit is set to 1 if the DLFrequ frequency set by the network is not usable for the end-device.
+[ISOBMFF] defines the following terms:
+bitr
+clap
+clli
+colr
+ctts
+iso6
+mdcv
+nclx
+visualsampleentry
 
-*DRError* bit is set to 1 if the classB downlink Data Rate set by the network is not defined.
+[RFC6381] defines the following terms:
+codecs
 
-*McGroupUndefined* is set 1 if the McGroupID specified by the command is not defined in the end-device (was not created before calling this command).
-
-If no errors are present, the TimeToStart field encodes the number of seconds from the **_McClassBSessionAns_** uplink to the beginning of the multicast fragmentation session. This allows the server to check that the end-device clock is roughly synchronized and that it will effectively start acquiring the classB beacon at the right moment (before the beginning of the classB multicast session with some margin).
-
-## Glossary
+[vp9] defines the following terms:
+coll
+smdm
 
 
-<table>
-    <caption>Glossary</caption>
-    <thead>
-        <tr>
-            <th>Abbriviation</th>
-            <th>Meaning</th>
-        </tr>
-        <tr>
-            <td>AS</td>
-            <td>Application Server</td>
-        </tr>
-	<tr>
-            <td>TBD</td>
-            <td>To Be Done</td>
-        </tr>
-    </tbody>
-</table>
 
-## Bibliography 
+# Reference
 
-### References
+## Normative References
 
-[LoRaWAN 1.0.2]: LoRaWANTM 1.0.2 Specification, LoRa Alliance, July 2016
-
-[LoRaWAN 1.1]: LoRaWANTM 1.1 Specification, LoRa Alliance, October 11, 2017
-
-## NOTICE OF USE AND DISCLOSURE
-
-Copyright © LoRa Alliance, Inc. (2018). All Rights Reserved.
-
-The information within this document is the property of the LoRa Alliance (“The Alliance”) and its use and disclosure are subject to LoRa Alliance Corporate Bylaws, Intellectual Property Rights (IPR) Policy and Membership Agreements.
-
-Elements of LoRa Alliance specifications may be subject to third party intellectual property rights, including without limitation, patent, copyright or trademark rights (such a third party may or may not be a member of LoRa Alliance). The Alliance is not responsible and shall not be held responsible in any manner for identifying or failing to identify any or all such third party intellectual property rights.
-
-This document and the information contained herein are provided on an “AS IS” basis and THE ALLIANCE DISCLAIMS ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO (A) ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OF THIRD PARTIES (INCLUDING WITHOUT LIMITATION ANY INTELLECTUAL PROPERTY RIGHTS INCLUDING PATENT, COPYRIGHT OR TRADEMARK RIGHTS) OR (B) ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE OR NONINFRINGEMENT.
-
-IN NO EVENT WILL THE ALLIANCE BE LIABLE FOR ANY LOSS OF PROFITS, LOSS OF BUSINESS, LOSS OF USE OF DATA, INTERRUPTION OFBUSINESS, OR FOR ANY OTHER DIRECT, INDIRECT, SPECIAL OR EXEMPLARY, INCIDENTIAL, PUNITIVE OR CONSEQUENTIAL DAMAGES OF ANY KIND, IN CONTRACT OR IN TORT, IN CONNECTION WITH THIS DOCUMENT OR THE INFORMATION CONTAINED HEREIN, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH LOSS OR DAMAGE. 
-
-The above notice and this paragraph must be included on all copies of this document that are made.
-
-LoRa Alliance™
-5177 Brandin Court
-Fremont, CA 94538
-United States
-
-Note: All Company, brand and product names may be trademarks that are the sole property of their respective owners.
+**[AV1]** AV1 Bitstream & Decoding Process Specification. Standard. URL: https://aomedia-codec.github.io/av1-spec/av1-spec.pdf
+**[CENC]** Information technology — MPEG systems technologies — Part 7: Common encryption in ISObase media file format files. Standard. URL: https://www.iso.org/standard/68042.html
+**[CMAF]** Information technology — Multimedia application format (MPEG-A) — Part 19: Common me-dia application format (CMAF) for segmented media. Standard. URL: https://www.iso.org/stan-dard/71975.html
+**[ISOBMFF]** Information technology — Coding of audio-visual objects — Part 12: ISO Base Media File For-mat. December 2015. International Standard. URL: http://standards.iso.org/ittf/PubliclyAvailable-Standards/c068960_ISO_IEC_14496-12_2015.zip
+**[RFC2119]** S. Bradner. Key words for use in RFCs to Indicate Requirement Levels. March 1997. Best Cur-rent Practice. URL: https://tools.ietf.org/html/rfc2119
+**[RFC6381]** R. Gellens; D. Singer; P. Frojdh. The 'Codecs' and 'Profiles' Parameters for "Bucket" MediaTypes. August 2011. Proposed Standard. URL: https://tools.ietf.org/html/rfc6381
