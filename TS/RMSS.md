@@ -18,7 +18,7 @@ Licensing information is available at http://aomedia.org/license/
 
 The MATERIALS ARE PROVIDED “AS IS.” The Alliance for Open Media, its members, and itscontributors expressly disclaim any warranties (express, implied, or otherwise), including implied war-ranties of merchantability, non-infringement, fitness for a particular purpose, or title, related to the ma-terials. The entire risk as to implementing or otherwise using the materials is assumed by the imple-menter and user. IN NO EVENT WILL THE ALLIANCE FOR OPEN MEDIA, ITS MEMBERS, ORCONTRIBUTORS BE LIABLE TO ANY OTHER PARTY FOR LOST PROFITS OR ANY FORMOF INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES OF ANY CHAR-ACTER FROM ANY CAUSES OF ACTION OF ANY KIND WITH RESPECT TO THIS DELIV-ERABLE OR ITS GOVERNING AGREEMENT, WHETHER BASED ON BREACH OF CON-TRACT, TORT (INCLUDING NEGLIGENCE), OR OTHERWISE, AND WHETHER OR NOT THEOTHER MEMBER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
-**Abstract**\ 
+**Abstract** 
 This document specifies the storage format for [AV1] bitstreams in [ISOBMFF] tracks as well as in[CMAF] files. 
  
 ## Bitstream features overview 
@@ -32,6 +32,18 @@ NOTE: Tile List OBUs defined in the [AV1] specification are not supported in the
 A future version of the specification may do so.
 ```
 Temporal Units are processed by a decoder in the order given by the bitstream. Each Temporal Unit isassociated with a presentation time. Some Temporal Units may contain multiple frames to be decodedbut only one is presented.
+
+```
+NOTE: The AV1 specification defines scalability features, allowing frames from multiple layers oroperating points to be present in a single temporal unit. This version of
+storage in ISOBMFF sup-ports the simple storage of scalable streams in a single track, but does not specify advanced toolsfor handling multi-track support, layer extraction, or
+other scalability related use cases. A futureversion of the specification may do so.
+```
+
+Frames carried in Temporal Units may have coding dependencies on frames carried previously in thesame Temporal Unit or in previous Temporal Units. Frames that can be decoded without dependencies to previous frames are of two categories: *Key Frames* and *Intra-only Frames*. Frames that cannot be decoded independently are of three categories: *Inter Frames, Switch Frames*, and frames with a *show_existing_frame* flag set to 1. 
+
+Key Frames with the *show_frame* flag set to 1 have the additional property that after decoding the Key Frame, all frames following the Key Frame in the bitstream can be decoded. They are called *Random Access Points* in [AV1].
+
+Key Frames with the *show_frame* flag set to 0 are called Delayed Random Access Points. Delayed Random Access Points have the additional property that if a future Key Frame Dependent Recovery Point exists, all frames following that Key Frame Dependent Recovery Point can be decoded. A Key Frame Dependent Recovery Point is a frame with show_existing_frame set to 1 that refers to a previ-ous Delayed *Random Access Points*.
 
 ## Basic Encapsulation Scheme
 
@@ -79,7 +91,7 @@ The width and height in the TrackHeaderBox SHOULD equal, respectively, the maxim
 hSpacing / vSpacing = MaxRenderWidth * (max_frame_height_minus_1 + 1) / 
 ((max_frame_width_minus_1 + 1) * MaxRenderHeig
 ```
-The **_compressorname_** field of the *VisualSampleEntry* is an informative name. It is formatted in a fixed32-byte field, with the first byte set to the number of bytes to be displayed, followed by that number ofbytes of displayable data, followed by padding to complete 32 bytes total (including the size byte).The value "\012AOM Coding" is RECOMMENDED; the first byte is a count of the remaining bytes, here represented by \012, which (being octal 12) is decimal 10, the number of bytes in the rest of thestring.
+The **_compressorname_** field of the *VisualSampleEntry* is an informative name. It is formatted in a fixed32-byte field, with the first byte set to the number of bytes to be displayed, followed by that number of bytes of displayable data, followed by padding to complete 32 bytes total (including the size byte). The value "\012AOM Coding" is RECOMMENDED; the first byte is a count of the remaining bytes, here represented by \012, which (being octal 12) is decimal 10, the number of bytes in the rest of thestring.
 
 ```
 NOTE: Parsers may ignore the value of the compressorname field. 
@@ -107,7 +119,7 @@ Quantity:  Exactly OneThe
 
 ### Description
 
-The **_AV1CodecConfigurationBox_** contains decoder configuration information that SHALL be validfor every sample that references the sample entry.
+The **_AV1CodecConfigurationBox_** contains decoder configuration information that SHALL be valid for every sample that references the sample entry.
 
 ### Syntax
 ```
@@ -149,7 +161,7 @@ NOTE: The marker bit ensures that the bit pattern of the first byte of the AV1Co
 Record cannot be mistaken for an OBU Header byte.
 ```
 
-The **_version_** field indicates the version of the AV1CodecConfigurationRecord. The value SHALL beset to 1 for AV1CodecConfigurationRecord.
+The **_version_** field indicates the version of the AV1CodecConfigurationRecord. The value SHALL beset to 1 for AV1CodecConfiguration Record.
 
 The **_seq_profile_** field indicates the AV1 profile and SHALL be equal to the seq_profile value from the *Sequence Header OBU*.
 
@@ -285,7 +297,8 @@ If an AV1 Sample is signaled as a sync sample (in the SyncSampleBox or by settin
 - It contains a *Sequence Header OBU* before the first *Frame Header OBU*.
 
 ```
-NOTE: Within this definition, a sync sample may contain additional frames that are not KeyFrames. The fact that none of them is the first frame in the temporal unit ensures that they aredecodable.
+NOTE: Within this definition, a sync sample may contain additional frames that are not KeyFrames. 
+The fact that none of them is the first frame in the temporal unit ensures that they aredecodable.
 ```
 
 ```
@@ -319,7 +332,7 @@ Mandatory:  No
 Quantity:   Zero or more.
 ```
 
-#### Description
+### Description
 
 The **_AV1ForwardKeyFrameSampleGroupEntry_** documents samples that contain a *Delayed Random Access Point* that are followed at a given distance in the bitstream by a *Key Frame Dependent Recov-ery Point*.
 
@@ -376,6 +389,18 @@ class AV1SwitchFrameSampleGroupEntry extends VisualSampleGroupEntry('av1s')
 }
 ```
 
+## V1 Metadata sample group entry
+
+### Definition
+
+```
+Group Type: av1M
+Container:  Sample Group 
+Description Box ('sgpd')
+Mandatory:  No
+Quantity:   Zero or more.
+```
+
 ### Description
 
 The AV1MetadataSampleGroupEntry documents samples that contain *metadata OBUs*. Thegrouping_type_parameter can be used to identify samples containing *metadata OBUs* of a giventype. If no grouping_type_parameter is provided, the sample group entry identifies samples con-taining *metadata OBUs* for which the metadata_type is unknown.
@@ -401,7 +426,7 @@ For this sample group entry, the grouping_type_parameter syntax is as follows
 
 # CMAF AV1 track format
 
-[CMAF] defines structural constraints on ISOBMFF files additional to [ISOBMFF] for the purpose of,for example, adaptive streaming or for protected files. Conformance to these structural constraints issignaled by the presence of the brand cmfc in the FileTypeBox.
+[CMAF] defines structural constraints on ISOBMFF files additional to [ISOBMFF] for the purpose of, for example, adaptive streaming or for protected files. Conformance to these structural constraints issignaled by the presence of the brand cmfc in the FileTypeBox.
 
 If a CMAF Video Track uses the brand av01, it is called a CMAF AV1 Track and the following con-straints, defining the CMAF Media Profile for AV1, apply:
 
@@ -420,22 +445,22 @@ When protected, *CMAF AV1 Tracks* SHALL use the signaling defined in [CMAF], whi
 
 *CMAF AV1 Tracks* and non-segmented AV1 files MAY be protected. If protected, they SHALL con-form to [CENC]. Only the *cenc* and *cbcs* protection schemes are supported.
 
-When the protected scheme *cenc* is used, samples SHALL be protected using subsample encryptionand SHALL NOT use pattern encryption.
+When the protected scheme *cenc* is used, samples SHALL be protected using subsample encryption and SHALL NOT use pattern encryption.
 
-When the protected scheme *cbcs* is used, samples SHALL be protected using subsample encryption and SHALL use pattern encryption. [CENC] recommends that the Pattern Block length be 10, i.e.crypt_byte_block + skip_byte_block = 10. All combinations such that this is true SHALLbe supported, including crypt_byte_block = 10 and skip_byte_block = 0.
+When the protected scheme *cbcs* is used, samples SHALL be protected using subsample encryption and SHALL use pattern encryption. [CENC] recommends that the Pattern Block length be 10, i.e. crypt_byte_block + skip_byte_block = 10. All combinations such that this is true SHALL be supported, including crypt_byte_block = 10 and skip_byte_block = 0.
 
-## General Subsample Encryption constraints§
+## General Subsample Encryption constraints
 
 Within protected samples, the following constraints apply:
 
 - Protected samples SHALL be exactly spanned by one or more contiguous subsamples.
-  - An OBU MAY be spanned by one or more subsamples, especially when it has multipleranges of protected data. However, as recommended in [CENC], writers SHOULD reducethe number of subsamples as possible. This can be achieved by using a subsample that spansmultiple consecutive unprotected OBUs as well as the first unprotected and protected partsof the following protected OBU, if such protected OBU exists.
+  - An OBU MAY be spanned by one or more subsamples, especially when it has multiple ranges of protected data. However, as recommended in [CENC], writers SHOULD reduce the number of subsamples as possible. This can be achieved by using a subsample that spans multiple consecutive unprotected OBUs as well as the first unprotected and protected partsof the following protected OBU, if such protected OBU exists.
   - A large unprotected OBU whose data size is larger than the maximum size of a single *Bytes-Of ClearData* field MAY be spanned by multiple subsamples with zero size *BytesOfPro-tectedData*.
 
 - All *OBU Headers* and associated *obu_size* fields SHALL be unprotected.
 - *Temporal Delimiter OBUs, Sequence Header OBUs*, and *Frame Header OBUs* (including withina *Frame OBU*), *Redundant Frame Header OBUs* and *Padding OBUs* SHALL be unprotected.
 - *Metadata OBUs* MAY be protected.
-- *Tile Group OBUs* and *Frame OBUs* SHALL be protected. Within *Tile Group OBUs* or *FrameOBUs*, the following applies:
+- *Tile Group OBUs* and *Frame OBUs* SHALL be protected. Within *Tile Group OBUs* or *Frame OBUs*, the following applies:
 
   - A subsample SHALL be created for each tile.
   - *BytesOfProtectedData* SHALL be a multiple of 16 bytes.
@@ -443,7 +468,8 @@ Within protected samples, the following constraints apply:
   - *BytesOfProtectedData* SHALL span all complete 16-byte blocks of the decode_tile struc-ture (including any trailing bits).
 
 ```
-NOTE: As a result of the above, partial blocks are not used and it is possible that BytesOfPro-tectedData does not start at the first byte of the decode_tile structure, but some number of bytes following that.
+NOTE: As a result of the above, partial blocks are not used and it is possible that BytesOfPro-tectedData does not start at the first byte 
+of the decode_tile structure, but some number of bytes following that.
 ```
 
   - All other parts of *Tile Group OBUs* and *Frame OBUs* SHALL be unprotected.
@@ -457,12 +483,13 @@ NOTE: As a result of the above, partial blocks are not used and it is possible t
 
 # Codecs Parameter String
 
-DASH and other applications require defined values for the *‘Codecs’* parameter specified in[RFC6381] for ISO Media tracks. The codecs parameter string for the AOM AV1 codec is as follows:
+DASH and other applications require defined values for the *‘Codecs’* parameter specified in [RFC6381] for ISO Media tracks. The codecs parameter string for the AOM AV1 codec is as follows:
+
 ```
 <sample entry 4CC>.<profile>.<level><tier>.<bitDepth>.<monochrome>.<chromaSu<colorPrimaries>.<transferCharacteristics>.<matrixCoefficients>.<videoFullRa
 ```
 
-All fields following the sample entry 4CC are expressed as double digit decimals, unless indicated oth-erwise. Leading or trailing zeros cannot be omitted.
+All fields following the sample entry 4CC are expressed as double digit decimals, unless indicated otherwise. Leading or trailing zeros cannot be omitted.
 
 The profile parameter value, represented by a single digit decimal, SHALL equal the value of seq_pro-file in the *Sequence Header OBU*.
 
@@ -470,15 +497,17 @@ The level parameter value SHALL equal the first level value indicated by *seq_le
 
 The tier parameter value SHALL be equal to M when the first *seq_tier* value in the *Sequence Header OBU* is equal to 0, and H when it is equal to 1.
 
-The bitDepth parameter value SHALL equal the value of BitDepth variable as defined in [AV1] de-rived from the Sequence Header OBU.The monochrome parameter value, represented by a single digit decimal, SHALL equal the value ofmono_chrome in the *Sequence Header OBU*.
+The bitDepth parameter value SHALL equal the value of BitDepth variable as defined in [AV1] de-rived from the Sequence Header OBU.
 
-The chromaSubsampling parameter value, represented by a three-digit decimal, SHALL have its firstdigit equal to subsampling_x and its second digit equal to subsampling_y. If both subsampling_x andsubsampling_y are set to 1, then the third digit SHALL be equal to chroma_sample_position, other-wise it SHALL be set to 0.
+The monochrome parameter value, represented by a single digit decimal, SHALL equal the value ofmono_chrome in the Sequence Header OBU.
 
-The colorPrimaries, transferCharacteristics, matrixCoefficients, and videoFullRangeFlag parametervalues SHALL equal the value of matching fields in the *Sequence Header OBU*, if color_descrip-tion_present_flag is set to 1, otherwise they SHOULD not be set, defaulting to the values below. ThevideoFullRangeFlag is represented by a single digit.
+The chromaSubsampling parameter value, represented by a three-digit decimal, SHALL have its first digit equal to subsampling_x and its second digit equal to subsampling_y. If both subsampling_x and subsampling_y are set to 1, then the third digit SHALL be equal to chroma_sample_position, other-wise it SHALL be set to 0.
 
-For example, codecs="av01.0.04M.10.0.112.09.16.09.0" represents AV1 Main Profile, level 3.0, Maintier, 10-bit content, non-monochrome, with 4:2:0 chroma subsampling co-located with (0, 0) lumasample, ITU-R BT.2100 color primaries, ITU-R BT.2100 PQ transfer characteristics, ITU-R BT.2100YCbCr color matrix, and studio swing representation.
+The colorPrimaries, transferCharacteristics, matrixCoefficients, and videoFullRangeFlag parameter values SHALL equal the value of matching fields in the *Sequence Header OBU*, if color_descrip-tion_present_flag is set to 1, otherwise they SHOULD not be set, defaulting to the values below. The videoFullRangeFlag is represented by a single digit.
 
-The parameters sample entry 4CC, profile, level, tier, and bitDepth are all mandatory fields. If any ofthese fields are empty, or not within their allowed range, the processing device SHOULD treat it as an error.
+For example, codecs="av01.0.04M.10.0.112.09.16.09.0" represents AV1 Main Profile, level 3.0, Main tier, 10-bit content, non-monochrome, with 4:2:0 chroma subsampling co-located with (0, 0) lumasample, ITU-R BT.2100 color primaries, ITU-R BT.2100 PQ transfer characteristics, ITU-R BT.2100 YCbCr color matrix, and studio swing representation.
+
+The parameters sample entry 4CC, profile, level, tier, and bitDepth are all mandatory fields. If any of these fields are empty, or not within their allowed range, the processing device SHOULD treat it as an error.
 
 All the other fields (including their leading '.') are optional, mutually inclusive (all or none) fields. Ifnot specified then the values listed in the table below are assumed
 
@@ -490,29 +519,31 @@ transferCharacteristics    1 (ITU-R BT.709)
 matrixCoefficients         1 (ITU-R BT.709)
 videoFullRangeFlag         0 (studio swing representation)
 ```
-The string codecs="av01.0.01M.08" in this case would represent AV1 Main Profile, level 2.1, Main tier, 8-bit content with 4:2:0 chroma subsampling, ITU-R BT.709 color primaries, transfer characteris-tics, matrix coefficients, and studio swing representation. 
+
+The string codecs="av01.0.01M.08" in this case would represent AV1 Main Profile, level 2.1, Main tier, 8-bit content with 4:2:0 chroma subsampling, ITU-R BT.709 color primaries, transfer characteristics, matrix coefficients, and studio swing representation. 
 
 If any character that is not '.', digits, part of the AV1 4CC, or a tier value is encountered, the string SHALL be interpreted ignoring all the characters starting from that character.
 
 # Conformance
 
-Conformance requirements are expressed with a combination of descriptive assertions and RFC 2119 terminology. The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”,“SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in the normativeparts of this document are to be interpreted as described in RFC 2119. However, for readability, thesewords do not appear in all uppercase letters in this specification.
+Conformance requirements are expressed with a combination of descriptive assertions and RFC 2119 terminology. The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”,“SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in the normative parts of this document are to be interpreted as described in RFC 2119. However, for readability, these words do not appear in all uppercase letters in this specification.
 
-All of the text of this specification is normative except sections explicitly marked as non-normative,examples, and notes. [RFC2119]
+All of the text of this specification is normative except sections explicitly marked as non-normative, examples, and notes. [RFC2119]
 
-Examples in this specification are introduced with the words “for example” or are set apart from thenormative text with class="example", like this
+Examples in this specification are introduced with the words “for example” or are set apart from the normative text with class="example", like this
 
 ```
 This is an example of an informative example
 ```
 
-Informative notes begin with the word “Note” and are set apart from the normative text withclass="note", like this:
+Informative notes begin with the word “Note” and are set apart from the normative text with class="note", like this:
 
 ```
 Note, this is an informative note.
 ```
 
-# Terms defined by reference
+# Index 
+## Terms defined by reference
 
 **[AV1] defines the following terms:**\
 av1 bitstream\
