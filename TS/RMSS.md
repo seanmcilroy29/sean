@@ -55,7 +55,7 @@ Parsers SHALL support the structures required by the *‘iso6’* brand and MAY 
 ### Definitions
 
 ```
-Sample Entry Type: **av01**
+Sample Entry Type: av01
 Container:         Sample Description Box ('stsd')
 Mandatory:         Yes
 Quantity:          One or more.
@@ -514,7 +514,7 @@ Note, this is an informative note.
 
 # Terms defined by reference
 
-[AV1] defines the following terms
+[AV1] defines the following terms:
 av1 bitstream
 buffer_removal_time
 delayed random access point
@@ -580,15 +580,18 @@ codecs
 coll
 smdm
 
-
-
 # Reference
 
 ## Normative References
 
 **[AV1]** AV1 Bitstream & Decoding Process Specification. Standard. URL: https://aomedia-codec.github.io/av1-spec/av1-spec.pdf
+
 **[CENC]** Information technology — MPEG systems technologies — Part 7: Common encryption in ISObase media file format files. Standard. URL: https://www.iso.org/standard/68042.html
+
 **[CMAF]** Information technology — Multimedia application format (MPEG-A) — Part 19: Common me-dia application format (CMAF) for segmented media. Standard. URL: https://www.iso.org/stan-dard/71975.html
+
 **[ISOBMFF]** Information technology — Coding of audio-visual objects — Part 12: ISO Base Media File For-mat. December 2015. International Standard. URL: http://standards.iso.org/ittf/PubliclyAvailable-Standards/c068960_ISO_IEC_14496-12_2015.zip
+
 **[RFC2119]** S. Bradner. Key words for use in RFCs to Indicate Requirement Levels. March 1997. Best Cur-rent Practice. URL: https://tools.ietf.org/html/rfc2119
+
 **[RFC6381]** R. Gellens; D. Singer; P. Frojdh. The 'Codecs' and 'Profiles' Parameters for "Bucket" MediaTypes. August 2011. Proposed Standard. URL: https://tools.ietf.org/html/rfc6381
