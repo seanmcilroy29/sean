@@ -550,17 +550,17 @@ temporal uni\
 tile group obu\
 tile list obu\
 timing_info\
-timing_info_present_flag\
+timing_info_present_flag
 
 [CENC] defines the following terms:\
 bytesofcleardata\
 bytesofprotecteddata\
 cbcs\
-cenc\
+cenc
 
 [CMAF] defines the following terms\
 cmaf video track\
-cmf\
+cmf
 
 [ISOBMFF] defines the following terms:\
 bitr\
@@ -571,13 +571,13 @@ ctts\
 iso6\
 mdcv\
 nclx\
-visualsampleentry\
+visualsampleentry
 
-[RFC6381] defines the following terms:
+[RFC6381] defines the following terms:\
 codecs
 
-[vp9] defines the following terms:
-coll
+[vp9] defines the following terms:\
+coll\
 smdm
 
 # Reference
