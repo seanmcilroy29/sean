@@ -451,9 +451,47 @@ NOTE: As a result of the above, partial blocks are not used and it is possible t
 ## Subsample Encryption Illustration
 
 <figure class="text-center">
-      <img src="images/The multicast key derivation scheme.svg" alt="Subsample-based AV1 encryption">
+      <img src="images/Subsample-based AV1 encryption.PNG" alt="Subsample-based AV1 encryption">
       <figcaption>Subsample-based AV1 encryption</figcaption>
 </figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
