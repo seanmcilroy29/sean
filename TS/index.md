@@ -1,9 +1,9 @@
 ---
-title: "Remote Multicast Setup Specification"
+title: "AV1 Codec ISO Media File Format Binding"
 status: "Approved"
 version: "1.0.0"
-date: "2018-09-10"
-documentName: "Remote_Multicast_Setup_Specification_v1_0_0"
+date: "2018-10-07"
+documentName: "AV1 Codec ISO Media File Format Binding V1.0.0 "
 files:
-  - Remote Multicast Setup Specification.md
+  - AOM.md
 ---
