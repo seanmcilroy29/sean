@@ -1,3 +1,26 @@
+**v1.0.0, 7 September 2018**
+
+This version: https://aomediacodec.github.io/av1-isobmff/
+
+Issue Tracking: GitHub
+
+**Editors:**\
+Cyril Concolato (Netflix)\
+Tom Finegan (Google)
+
+**Copyright 2018, The Alliance for Open Media**
+
+Licensing information is available at http://aomedia.org/license/
+
+The MATERIALS ARE PROVIDED “AS IS.” The Alliance for Open Media, its members, and itscontributors expressly disclaim any 
+warranties (express, implied, or otherwise), including implied warranties of merchantability, non-infringement, fitness 
+for a particular purpose, or title, related to the materials. The entire risk as to implementing or otherwise using the 
+materials is assumed by the implementer and user. IN NO EVENT WILL THE ALLIANCE FOR OPEN MEDIA, ITS MEMBERS, OR
+CONTRIBUTORS BE LIABLE TO ANY OTHER PARTY FOR LOST PROFITS OR ANY FORMOF INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL 
+DAMAGES OF ANY CHAR-ACTER FROM ANY CAUSES OF ACTION OF ANY KIND WITH RESPECT TO THIS DELIVERABLE OR ITS GOVERNING AGREEMENT, 
+WHETHER BASED ON BREACH OF CONTRACT, TORT (INCLUDING NEGLIGENCE), OR OTHERWISE, AND WHETHER OR NOT THEOTHER MEMBER HAS BEEN 
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 **AV1 Codec ISO Media File Format Binding**
  
 **Abstract** 
