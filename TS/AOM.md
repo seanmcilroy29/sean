@@ -524,9 +524,9 @@ Note, this is an informative note.
 
 # Index 
 ## Terms defined by this specification
-av01\
-- value for AV1SampleEntry, in §2.2.1\
-- value for ISOBMFF Brand, in §2.1\
+av01
+- value for AV1SampleEntry, in §2.2.1
+- value for ISOBMFF Brand, in §2.1
 av1C, in §2.3.1\
 AV1CodecConfigurationBox, in §2.3.2\
 av1f, in §2.5.1\
@@ -544,8 +544,10 @@ chroma_subsampling_y, in §2.3.4\
 CMAF AV1 Track, in §3\
 compressorname, in §2.2.4\
 config, in §2.2.4configOBUs, in §2.3.4\
-fwd_distance, in §2.5.4height, in §2.2.4\ 
-high_bitdepth, in §2.3.4initial_presentation_delay_minus_one,in§2.3.4\
+fwd_distance, in §2.5.4\
+height, in §2.2.4\ 
+high_bitdepth, in §2.3.4\
+initial_presentation_delay_minus_one,in§2.3.4\
 initial_presentation_delay_present, in §2.3.4\
 marker, in §2.3.4\
 metadata_specific_parameters, in §2.8.4\
