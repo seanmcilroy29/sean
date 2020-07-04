@@ -55,12 +55,12 @@ This section describes the basic data structures used to signal encapsulation of
 
 A file conformant to this specification satisfies the following:
 
-It SHALL conform to the normative requirements of [ISOBMFF]
-It SHALL have the *‘av01’* brand among the compatible brands array of the FileTypeBox
-It SHALL contain at least one track using an *AV1SampleEntry*
-It SHOULD indicate a structural ISOBMFF brand among the compatible brands array of the File-TypeBox, such as *‘iso6’*
-It MAY indicate CMAF brands as specified in *§3 CMAF AV1 track format*
-It MAY indicate other brands not specified in this document provided that the associated require-ments do not conflict with those given in this specification
+- It SHALL conform to the normative requirements of [ISOBMFF]
+- It SHALL have the *‘av01’* brand among the compatible brands array of the FileTypeBox
+- It SHALL contain at least one track using an *AV1SampleEntry*
+- It SHOULD indicate a structural ISOBMFF brand among the compatible brands array of the File-TypeBox, such as *‘iso6’*
+- It MAY indicate CMAF brands as specified in *§3 CMAF AV1 track format*
+- It MAY indicate other brands not specified in this document provided that the associated require-ments do not conflict with those given in this specification
 
 Parsers SHALL support the structures required by the *‘iso6’* brand and MAY support structures re-quired by further ISOBMFF structural brands.
 
