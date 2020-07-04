@@ -1,9 +1,9 @@
-# AV1 Codec ISO Media File Format Binding
+**AV1 Codec ISO Media File Format Binding**
  
 **Abstract** 
 This document specifies the storage format for [AV1] bitstreams in [ISOBMFF] tracks as well as in[CMAF] files. 
  
-## Bitstream features overview 
+# Bitstream features overview 
 
 An *_AV1 bitstream_* is composed of a sequence of *OBUs*, grouped into *Temporal Units*.
 
@@ -24,7 +24,7 @@ Key Frames with the *show_frame* flag set to 1 have the additional property that
 
 Key Frames with the *show_frame* flag set to 0 are called Delayed Random Access Points. Delayed Random Access Points have the additional property that if a future Key Frame Dependent Recovery Point exists, all frames following that Key Frame Dependent Recovery Point can be decoded. A Key Frame Dependent Recovery Point is a frame with show_existing_frame set to 1 that refers to a previ-ous Delayed *Random Access Points*.
 
-## Basic Encapsulation Scheme
+# Basic Encapsulation Scheme
 
 This section describes the basic data structures used to signal encapsulation of *AV1 bitstreams* in [ISOBMFF] containers.
 
@@ -523,7 +523,40 @@ Note, this is an informative note.
 ```
 
 # Index 
-## Terms defined by reference
+## Terms defined by this specification
+av01\
+- value for AV1SampleEntry, in §2.2.1\
+- value for ISOBMFF Brand, in §2.1\
+av1C, in §2.3.1\
+AV1CodecConfigurationBox, in §2.3.2\
+av1f, in §2.5.1\
+AV1ForwardKeyFrameSampleGroupEntry, in§2.5.2\
+av1m, in §2.6.1\
+av1M, in §2.8.1\
+AV1MetadataSampleGroupEntry, in §2.8.2\
+AV1MultiFrameSampleGroupEntry, in §2.6.2\
+av1s, in §2.7.1AV1 Sample, in §2.4\
+AV1SampleEntry, in §2.2.2\
+AV1SwitchFrameSampleGroupEntry, in §2.7.2\
+chroma_sample_position, in §2.3.4\
+chroma_subsampling_x, in §2.3.4\
+chroma_subsampling_y, in §2.3.4\
+CMAF AV1 Track, in §3\
+compressorname, in §2.2.4\
+config, in §2.2.4configOBUs, in §2.3.4\
+fwd_distance, in §2.5.4height, in §2.2.4\ 
+high_bitdepth, in §2.3.4initial_presentation_delay_minus_one,in§2.3.4\
+initial_presentation_delay_present, in §2.3.4\
+marker, in §2.3.4\
+metadata_specific_parameters, in §2.8.4\
+metadata_type, in §2.8.4\
+monochrome, in §2.3.4\
+seq_level_idx_0, in §2.3.4\
+seq_profile, in §2.3.4\
+seq_tier_0, in §2.3.4\
+twelve_bit, in §2.3.4\
+version, in §2.3.4\
+width, in §2.2.4\              
 
 **[AV1] defines the following terms:**\
 av1 bitstream\
