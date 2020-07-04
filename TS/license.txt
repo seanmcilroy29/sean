@@ -1,3 +1,13 @@
+v1.0.0, 7 September 2018
+
+This version: https://aomediacodec.github.io/av1-isobmff/
+
+Issue Tracking: GitHub
+
+Editors:
+Cyril Concolato (Netflix)
+Tom Finegan (Google)
+
 Copyright 2018, The Alliance for Open Media
 
 Licensing information is available at http://aomedia.org/license/
