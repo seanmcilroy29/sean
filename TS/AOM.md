@@ -10,8 +10,7 @@ An *_AV1 bitstream_* is composed of a sequence of *OBUs*, grouped into *Temporal
 OBUs are made of a 1 or 2 bytes header, identifying in particular the type of OBU, followed by an op-tional length field and by an optional payload, whose presence and content depend on the OBU type.Depending on its type, an OBU can carry configuration information, metadata, or coded video data.
 
 ```
-NOTE: Tile List OBUs defined in the [AV1] specification are not supported in the current version
-of this specification. A future version of the specification may do so.
+NOTE: Tile List OBUs defined in the [AV1] specification are not supported in the current version of this specification. A future version of the specification may do so.
 ```
 Temporal Units are processed by a decoder in the order given by the bitstream. Each Temporal Unit isassociated with a presentation time. Some Temporal Units may contain multiple frames to be decodedbut only one is presented.
 
@@ -74,8 +73,7 @@ hSpacing / vSpacing = MaxRenderWidth * (max_frame_height_minus_1 + 1) /
 The **_compressorname_** field of the *VisualSampleEntry* is an informative name. It is formatted in a fixed32-byte field, with the first byte set to the number of bytes to be displayed, followed by that number of bytes of displayable data, followed by padding to complete 32 bytes total (including the size byte). The value "\012AOM Coding" is RECOMMENDED; the first byte is a count of the remaining bytes, here represented by \012, which (being octal 12) is decimal 10, the number of bytes in the rest of thestring.
 
 ```
-NOTE: Parsers may ignore the value of the compressorname field. 
-It is specified in this documentsimply for legacy and backwards compatibility reasons.
+NOTE: Parsers may ignore the value of the compressorname field. It is specified in this documentsimply for legacy and backwards compatibility reasons.
 ```
 
 The **_config_** field SHALL contain an*AV1CodecConfigurationBox* that applies to the samples associat-ed with this sample entry
@@ -102,6 +100,7 @@ Quantity:  Exactly OneThe
 The **_AV1CodecConfigurationBox_** contains decoder configuration information that SHALL be valid for every sample that references the sample entry.
 
 ### Syntax
+
 ```
 class AV1CodecConfigurationBox extends Box('av1C'){
   AV1CodecConfigurationRecord av1Config;
@@ -127,7 +126,6 @@ aligned (8) class AV1CodecConfigurationRecord {
  } else {
   unsigned int (4) reserved = 0;
  }
-
   unsigned int (8)[] configOBUs;
  }
 ```
@@ -137,8 +135,7 @@ aligned (8) class AV1CodecConfigurationRecord {
 The **_marker_** field SHALL be set to 1.
 
 ```
-NOTE: The marker bit ensures that the bit pattern of the first byte of the AV1CodecConfiguration-
-Record cannot be mistaken for an OBU Header byte.
+NOTE: The marker bit ensures that the bit pattern of the first byte of the AV1CodecConfiguration Record cannot be mistaken for an OBU Header byte.
 ```
 
 The **_version_** field indicates the version of the AV1CodecConfigurationRecord. The value SHALL beset to 1 for AV1CodecConfiguration Record.
@@ -174,12 +171,14 @@ The **_initial_presentation_delay_minus_one_** field indicates the number of sam
 NOTE: With the above procedure, when smooth presentation can be guaranteed after decoding the
 first sample, initial_presentation_delay_minus_one is 0.
 ```
+
 ```
 NOTE: Because the above procedure considers all OBUs in all samples associated with a sample
 entry, if these OBUS form multiple coded video sequences which would have different values of
 initial_presentation_delay_minus_one if considered separately, the sample entry would
 signal the larger value.
 ```
+
 ```
 EXAMPLE 1
 The difference between initial_presentation_delay_minus_one and initial_display_delay_minus_1 can be illustrated by considering the following example:
@@ -196,6 +195,7 @@ initial_presentation_delay_minus_one would be 1 because it takes presentation of
 
 initial_presentation_delay_minus_one would be 2 because it takes presentation of 3 samples to ensure that c is decoded.
 ```
+
 The **_configOBUs_** field contains zero or more OBUs. Any OBU may be present provided that the following procedures produce compliant AV1 bitstreams:
 
 - From any sync sample, an *AV1 bitstream is formed by first outputting* the OBUs contained in the AV1CodecConfigurationBox and then by outputing all OBUs in the samples themselves, in order, starting from the sync sample.
@@ -311,11 +311,13 @@ Quantity:  Zero or more.
 The **_AV1ForwardKeyFrameSampleGroupEntry_** documents samples that contain a *Delayed Random Access Point* that are followed at a given distance in the bitstream by a *Key Frame Dependent Recov-ery Point*.
 
 ### Syntax
+
 ```
 class AV1ForwardKeyFrameSampleGroupEntry extends VisualSampleGroupEntry('av1  
 unsigned int(8) fwd_distance;
 }
 ```
+
 ### Semantics
 
 The **_fwd_distance_** field indicates the number of samples between this sample and the next sample con-taining the associated *Key Frame Dependent Recovery Point*. 0 means the next sample.
@@ -323,6 +325,7 @@ The **_fwd_distance_** field indicates the number of samples between this sample
 ## AV1 Multi-Frame sample group entry
 
 ### Definition
+
 ```
 Group Type: av1m
 Container:  Sample Group Description Box ('sgpd')
@@ -380,6 +383,7 @@ Quantity:   Zero or more.
 The AV1MetadataSampleGroupEntry documents samples that contain *metadata OBUs*. Thegrouping_type_parameter can be used to identify samples containing *metadata OBUs* of a giventype. If no grouping_type_parameter is provided, the sample group entry identifies samples con-taining *metadata OBUs* for which the metadata_type is unknown.
 
  ### Syntax
+ 
 ```
 class AV1MetadataSampleGroupEntry extends VisualSampleGroupEntry('av1M') {
 }
