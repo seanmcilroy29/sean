@@ -115,7 +115,7 @@ Optional boxes not specifically mentioned here can be present, in particular tho
 Box Type:  av1C 
 Container: AV1 Sample Entry ('av01')
 Mandatory: Yes
-Quantity:  Exactly OneThe
+Quantity:  Exactly One
 ```
 
 ### Description
@@ -331,7 +331,7 @@ Quantity:  Zero or more.
 
 ### Description
 
-The **_AV1ForwardKeyFrameSampleGroupEntry_** documents samples that contain a *Delayed Random Access Point* that are followed at a given distance in the bitstream by a *Key Frame Dependent Recov-ery Point*.
+The **_AV1ForwardKeyFrameSampleGroupEntry_** documents samples that contain a *Delayed Random Access Point* that are followed at a given distance in the bitstream by a *Key Frame Dependent Recovery Point*.
 
 ### Syntax
 
@@ -352,8 +352,8 @@ The **_fwd_distance_** field indicates the number of samples between this sample
 ```
 Group Type: av1m
 Container:  Sample Group Description Box ('sgpd')
-Mandatory:  NoQuantity:   
-Zero or more.
+Mandatory:  No
+Quantity:   Zero or more.
 ```
 
 ### Description
@@ -374,8 +374,8 @@ class AV1MultiFrameSampleGroupEntry extends VisualSampleGroupEntry('av1m') {
 ```
 Group Type: av1s
 Container:  Sample Group Description Box ('sgpd')
-Mandatory:  NoQuantity:   
-Zero or more
+Mandatory:  No
+Quantity:   Zero or more
 ```
 
 ### Description
@@ -411,7 +411,9 @@ The AV1MetadataSampleGroupEntry documents samples that contain *metadata OBUs*. 
 class AV1MetadataSampleGroupEntry extends VisualSampleGroupEntry('av1M') {
 }
 ```
+
 For this sample group entry, the grouping_type_parameter syntax is as follows
+
 ```
 {   
    unsigned int (8) metadata_type;   
@@ -473,14 +475,14 @@ NOTE: As a result of the above, partial blocks are not used and it is possible t
 of the decode_tile structure, but some number of bytes following that.
 ```
 
-  - All other parts of *Tile Group OBUs* and *Frame OBUs* SHALL be unprotected.
+ - All other parts of *Tile Group OBUs* and *Frame OBUs* SHALL be unprotected.
 
 ## Subsample Encryption Illustration
 
 Figure #1 illustrates Subsample based encryption of AV1.
 
 <figure class="text-center">
-      <img src="Images/Subsample-based AV1_encryption.jpg" alt="Subsample-based AV1 encryption - Copy.jpg">
+      <img src="Images/Subsample-based AV1_encryption.jpg" alt="Subsample-based AV1 encryption">
       <figcaption>Subsample-based AV1 encryption</figcaption>
 </figure>
 
@@ -548,8 +550,8 @@ Note, this is an informative note.
 # Index 
 ## Terms defined by this specification
 av01
-- value for AV1SampleEntry, in §2.2.1
-- value for ISOBMFF Brand, in §2.1
+-value for AV1SampleEntry, in §2.2.1
+-value for ISOBMFF Brand, in §2.1
 av1C, in §2.3.1\
 AV1CodecConfigurationBox, in §2.3.2\
 av1f, in §2.5.1\
@@ -558,7 +560,8 @@ av1m, in §2.6.1\
 av1M, in §2.8.1\
 AV1MetadataSampleGroupEntry, in §2.8.2\
 AV1MultiFrameSampleGroupEntry, in §2.6.2\
-av1s, in §2.7.1AV1 Sample, in §2.4\
+av1s, in §2.7.1\
+AV1 Sample, in §2.4\
 AV1SampleEntry, in §2.2.2\
 AV1SwitchFrameSampleGroupEntry, in §2.7.2\
 chroma_sample_position, in §2.3.4\
