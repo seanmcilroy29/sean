@@ -1,22 +1,4 @@
 # AV1 Codec ISO Media File Format Binding
-
-v1.0.0, 7 September 2018
-
-**This version:**
-https://aomediacodec.github.io/av1-isobmff/
-
-**Issue Tracking:**
-GitHub
-
-**Editors:**\
-Cyril Concolato (Netflix)\
-Tom Finegan (Google)
-
-Copyright 2018, The Alliance for Open Media
-
-Licensing information is available at http://aomedia.org/license/
-
-The MATERIALS ARE PROVIDED “AS IS.” The Alliance for Open Media, its members, and itscontributors expressly disclaim any warranties (express, implied, or otherwise), including implied war-ranties of merchantability, non-infringement, fitness for a particular purpose, or title, related to the ma-terials. The entire risk as to implementing or otherwise using the materials is assumed by the imple-menter and user. IN NO EVENT WILL THE ALLIANCE FOR OPEN MEDIA, ITS MEMBERS, ORCONTRIBUTORS BE LIABLE TO ANY OTHER PARTY FOR LOST PROFITS OR ANY FORMOF INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES OF ANY CHAR-ACTER FROM ANY CAUSES OF ACTION OF ANY KIND WITH RESPECT TO THIS DELIV-ERABLE OR ITS GOVERNING AGREEMENT, WHETHER BASED ON BREACH OF CON-TRACT, TORT (INCLUDING NEGLIGENCE), OR OTHERWISE, AND WHETHER OR NOT THEOTHER MEMBER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 **Abstract** 
 This document specifies the storage format for [AV1] bitstreams in [ISOBMFF] tracks as well as in[CMAF] files. 
@@ -28,15 +10,13 @@ An *_AV1 bitstream_* is composed of a sequence of *OBUs*, grouped into *Temporal
 OBUs are made of a 1 or 2 bytes header, identifying in particular the type of OBU, followed by an op-tional length field and by an optional payload, whose presence and content depend on the OBU type.Depending on its type, an OBU can carry configuration information, metadata, or coded video data.
 
 ```
-NOTE: Tile List OBUs defined in the [AV1] specification are not supported in the current versionof this specification. 
-A future version of the specification may do so.
+NOTE: Tile List OBUs defined in the [AV1] specification are not supported in the current version
+of this specification. A future version of the specification may do so.
 ```
 Temporal Units are processed by a decoder in the order given by the bitstream. Each Temporal Unit isassociated with a presentation time. Some Temporal Units may contain multiple frames to be decodedbut only one is presented.
 
 ```
-NOTE: The AV1 specification defines scalability features, allowing frames from multiple layers oroperating points to be present in a single temporal unit. This version of
-storage in ISOBMFF sup-ports the simple storage of scalable streams in a single track, but does not specify advanced toolsfor handling multi-track support, layer extraction, or
-other scalability related use cases. A futureversion of the specification may do so.
+NOTE: The AV1 specification defines scalability features, allowing frames from multiple layers oroperating points to be present in a single temporal unit. This version of storage in ISOBMFF sup-ports the simple storage of scalable streams in a single track, but does not specify advanced tools for handling multi-track support, layer extraction, or  other scalability related use cases. A futureversion of the specification may do so.
 ```
 
 Frames carried in Temporal Units may have coding dependencies on frames carried previously in thesame Temporal Unit or in previous Temporal Units. Frames that can be decoded without dependencies to previous frames are of two categories: *Key Frames* and *Intra-only Frames*. Frames that cannot be decoded independently are of three categories: *Inter Frames, Switch Frames*, and frames with a *show_existing_frame* flag set to 1. 
@@ -111,7 +91,7 @@ Optional boxes not specifically mentioned here can be present, in particular tho
 ### Definition
 
 ```
-Box Type:  av1C
+Box Type:  av1C 
 Container: AV1 Sample Entry ('av01')
 Mandatory: Yes
 Quantity:  Exactly OneThe
@@ -224,7 +204,7 @@ The **_configOBUs_** field contains zero or more OBUs. Any OBU may be present pr
 Additionally, the configOBUs field SHALL contain at most one *Sequence Header OBU* and if present, it SHALL be the first OBU.
 
 ```
-NOTE: The configOBUs field is expected to contain only one *Sequence Header OBU* and zero or more *Metadata OBUs* when applicable to all the associated samples.
+NOTE: The configOBUs field is expected to contain only one Sequence Header OBU and zero or more *Metadata OBUs* when applicable to all the associated samples.
 ```
 
 OBUs stored in the configOBUs field follow the *open_bitstream_unit Low Overhead Bitstream Format*
@@ -279,12 +259,7 @@ OBU in the sample, for which obu_has_size_field MAY be set to 0, in which case i
 fill the remainder of the sample,
 
 ```
-NOTE: When extracting OBUs from an ISOBMFF file, and depending on the capabilities of the
-decoder processing these OBUs, ISOBMFF parsers MAY need to either: set the obu_has_size_-
-field to 1 for some OBUs if not already set, add the size field in this case, and add Temporal Delimiter
-OBU; or use the length-delimited bitstream format as defined in Annex B of AV1. If encryption
-is used, similar operations MAY have to be done before or after decryption depending on
-the demuxer/decryptor/decoder architecture.
+NOTE: When extracting OBUs from an ISOBMFF file, and depending on the capabilities of thedecoder processing these OBUs, ISOBMFF parsers MAY need to either: set the obu_has_size_- field to 1 for some OBUs if not already set, add the size field in this case, and add Temporal Delimiter OBU; or use the length-delimited bitstream format as defined in Annex B of AV1. If encryption is used, similar operations MAY have to be done before or after decryption depending on the demuxer/decryptor/decoder architecture.
 ```
 
 - OBU trailing bits SHOULD be limited to byte alignment and SHOULD not be used for padding,
@@ -297,8 +272,7 @@ If an AV1 Sample is signaled as a sync sample (in the SyncSampleBox or by settin
 - It contains a *Sequence Header OBU* before the first *Frame Header OBU*.
 
 ```
-NOTE: Within this definition, a sync sample may contain additional frames that are not KeyFrames. 
-The fact that none of them is the first frame in the temporal unit ensures that they aredecodable.
+NOTE: Within this definition, a sync sample may contain additional frames that are not KeyFrames. The fact that none of them is the first frame in the temporal unit ensures that they aredecodable.
 ```
 
 ```
@@ -326,10 +300,10 @@ Unless explicitely stated, the grouping_type_parameter is not defined for the Sa
 ### Definition
 
 ```
-Group Type: av1f
-Container:  Sample Group Description Box ('sgpd')
-Mandatory:  No
-Quantity:   Zero or more.
+Group Type:av1f
+Container: Sample Group Description Box ('sgpd')
+Mandatory: No
+Quantity:  Zero or more.
 ```
 
 ### Description
