@@ -571,7 +571,7 @@ CMAF AV1 Track, in §3\
 compressorname, in §2.2.4\
 config, in §2.2.4configOBUs, in §2.3.4\
 fwd_distance, in §2.5.4\
-height, in §2.2.4\ 
+height, in §2.2.4\
 high_bitdepth, in §2.3.4\
 initial_presentation_delay_minus_one,in§2.3.4\
 initial_presentation_delay_present, in §2.3.4\
