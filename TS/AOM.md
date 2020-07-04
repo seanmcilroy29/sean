@@ -450,7 +450,7 @@ of the decode_tile structure, but some number of bytes following that.
 
 ## Subsample Encryption Illustration
 
-Figure #1 illustrates Subsample based encryption of AV1.
+Figure 1 illustrates Subsample based encryption of AV1.
 
 <figure class="text-center">
       <img src="Images/Subsample-based AV1_encryption.jpg" alt="Subsample-based AV1 encryption - Copy.jpg">
